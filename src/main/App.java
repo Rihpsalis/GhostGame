@@ -10,6 +10,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+
 
 public class App extends Application {
     private Panel panel;
@@ -27,11 +29,13 @@ public class App extends Application {
     private int size;
     private Group group;
 
-    public void init() {
+    public void init() throws IOException {
+        //Skalierungs Größe
+        size = 150;
+
         screenBounds = Screen.getPrimary().getBounds();
         screenHeight = screenBounds.getHeight();
         screenWidth = screenBounds.getWidth();
-        size = 150;
         directions = new boolean[4];
         bp = new BorderPane();
         group = new Group(bp);
