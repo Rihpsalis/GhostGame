@@ -25,35 +25,40 @@ public class Player {
     private double x;
     private double y;
     private boolean[] directions;
-    private int playerSizeX;
-    private int playerSizeY;
+    private double playerSize;
+    private double screenHeight;
+    private double screenWidth;
+    private int playerCenterX;
+    private int playerCenterY;
 
-
-    public Player(boolean[] directions, int size) {
-        playerSizeX = size;
-        playerSizeY = size;
+    public Player(boolean[] directions, double size, double screenHeight, double screenWidth) {
+        this.playerSize = size / 1.3;
 
         movingImagesR = new Image[4];
         for (int i = 0; i < 4; i++)
-            movingImagesR[i] = new Image(new File("resources/player/MovingRight_" + i + ".png").toString(), playerSizeX, playerSizeY, false, false);
+            movingImagesR[i] = new Image(new File("resources/player/MovingRight_" + i + ".png").toString(), playerSize, playerSize, false, false);
         movingCurImageR = movingImagesR[0];
 
         movingImagesL = new Image[4];
         for (int i = 0; i < 4; i++)
-            movingImagesL[i] = new Image(new File("resources/player/MovingLeft_" + i + ".png").toString(), playerSizeX, playerSizeY, false, false);
+            movingImagesL[i] = new Image(new File("resources/player/MovingLeft_" + i + ".png").toString(), playerSize, playerSize, false, false);
         movingCurImageL = movingImagesL[0];
 
         movingImagesUp = new Image[4];
         for (int i = 0; i < 4; i++)
-            movingImagesUp[i] = new Image(new File("resources/player/MovingUp_" + i + ".png").toString(), playerSizeX, playerSizeY, false, false);
+            movingImagesUp[i] = new Image(new File("resources/player/MovingUp_" + i + ".png").toString(), playerSize, playerSize, false, false);
         movingCurImageUp = movingImagesUp[0];
 
         movingImagesDown = new Image[4];
         for (int i = 0; i < 4; i++)
-            movingImagesDown[i] = new Image(new File("resources/player/MovingDown_" + i + ".png").toString(), playerSizeX, playerSizeY, false, false);
+            movingImagesDown[i] = new Image(new File("resources/player/MovingDown_" + i + ".png").toString(), playerSize, playerSize, false, false);
         movingCurImageDown = movingImagesDown[0];
 
         this.directions = directions;
+        this.screenHeight = screenHeight;
+        this.screenWidth = screenWidth;
+        playerCenterX = (int) (screenWidth - playerSize) / 2;
+        playerCenterY = (int) (screenHeight - playerSize) / 2;
     }
 
     public void nextImage() {
@@ -96,13 +101,13 @@ public class Player {
     
     public void render(GraphicsContext gcFg) {
         if (directions[1]) {
-            gcFg.drawImage(movingCurImageL, 1280, 720);
+            gcFg.drawImage(movingCurImageL, playerCenterX, playerCenterY);
         } else if (directions[3]) {
-            gcFg.drawImage(movingCurImageR, 1280, 720);
+            gcFg.drawImage(movingCurImageR, playerCenterX, playerCenterY);
         } else if (directions[0]) {
-            gcFg.drawImage(movingCurImageUp, 1280, 720);
+            gcFg.drawImage(movingCurImageUp, playerCenterX, playerCenterY);
         } else {
-            gcFg.drawImage(movingCurImageDown, 1280, 720);
+            gcFg.drawImage(movingCurImageDown, playerCenterX, playerCenterY);
         }
     }
 }

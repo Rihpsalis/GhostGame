@@ -31,7 +31,7 @@ public class App extends Application {
 
     public void init() throws IOException {
         //Skalierungs Größe
-        size = 150;
+        size = 200;
 
         screenBounds = Screen.getPrimary().getBounds();
         screenHeight = screenBounds.getHeight();
@@ -40,7 +40,7 @@ public class App extends Application {
         bp = new BorderPane();
         group = new Group(bp);
         scene = new Scene(group);
-        player = new Player(directions, size);
+        player = new Player(directions, size, screenHeight, screenWidth);
         inputControl = new InputControl(scene, player, directions);
         gridmap = new Gridmap(size, player);
         panel = new Panel(player, screenWidth, screenHeight, gridmap);
