@@ -26,7 +26,6 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
     private Image[] grassToWater;
     private Image[] dirtToWater;
     private int spriteBorder;
-    private ResourceLoader resourceLoader;
     private String gridmapInUse;
     private double screenHeight;
     private double screenWidth;
@@ -40,7 +39,7 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
     private int onScreenY;
     
 
-    public Gridmap(int SIZE, Player player, ResourceLoader resourceLoader, double screenHeight, double screenWidth) {
+    public Gridmap(int SIZE, Player player, double screenHeight, double screenWidth) {
         programStatus = "main";
         gridmapInUse = "Gridmap";
         this.screenHeight = screenHeight;
