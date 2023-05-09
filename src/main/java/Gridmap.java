@@ -26,7 +26,6 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
     private Image[] grassToWater;
     private Image[] dirtToWater;
     private int spriteBorder;
-    private ResourceLoader resourceLoader;
     private String gridmapInUse;
     private double screenHeight;
     private double screenWidth;
@@ -40,7 +39,7 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
     private int onScreenY;
     
 
-    public Gridmap(int SIZE, Player player, ResourceLoader resourceLoader, double screenHeight, double screenWidth) {
+    public Gridmap(int SIZE, Player player, double screenHeight, double screenWidth) {
         programStatus = "main";
         gridmapInUse = "Gridmap";
         this.screenHeight = screenHeight;
@@ -53,12 +52,12 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
         dirt = new Image(new File("main/resources/terrain/floor/Dirt.png").toString(), terrainSize, terrainSize, false, false);
         grass = new Image(new File("main/resources/terrain/floor/Grass.png").toString(), terrainSize, terrainSize, false, false);
         */ //Debugging
-        water = new Image(new File("test/resources/terrain/floor/Debug.png").toString(), terrainSize, terrainSize, false, false);
-        dirt = new Image(new File("test/resources/terrain/floor/Debug.png").toString(), terrainSize, terrainSize, false, false);
-        grass = new Image(new File("test/resources/terrain/floor/Debug.png").toString(), terrainSize, terrainSize, false, false);
+        water = new Image(new File("test/resources/terrain/floor/Debug.png").toString(), SIZE, SIZE, false, false);
+        dirt = new Image(new File("test/resources/terrain/floor/Debug.png").toString(), SIZE, SIZE, false, false);
+        grass = new Image(new File("test/resources/terrain/floor/Debug.png").toString(), SIZE, SIZE, false, false);
 
         grassToDirt = new Image[4];
-            grassToDirt[0] = new Image(new File("main/resources/terrain/floor/Grass_Dirt_0.png").toString(), terrainSize, terrainSize, false, false);
+            grassToDirt[0] = new Image(new File("main/resources/terrain/floor/Grass_Dirt_0.png").toString(), SIZE, terrainSize, false, false);
             grassToDirt[1] = new Image(new File("main/resources/terrain/floor/Grass_Dirt_1.png").toString(), terrainSize, terrainSize, false, false);
             grassToDirt[2] = new Image(new File("main/resources/terrain/floor/Grass_Dirt_2.png").toString(), terrainSize, terrainSize, false, false);
             grassToDirt[3] = new Image(new File("main/resources/terrain/floor/Grass_Dirt_3.png").toString(), terrainSize, terrainSize, false, false);

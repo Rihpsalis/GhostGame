@@ -29,7 +29,6 @@ public class App extends Application {
     //Skalierungs Größe
     private final int SIZE = 200;
     private Group group;
-    private ResourceLoader resourceLoader;
 
     public void init() throws IOException {
         screenBounds = Screen.getPrimary().getBounds();
@@ -46,7 +45,7 @@ public class App extends Application {
         scene = new Scene(group);
         player = new Player(directions, SIZE, screenHeight, screenWidth);
         inputControl = new InputControl(scene, player, directions);
-        gridmap = new Gridmap(SIZE, player, resourceLoader, screenHeight, screenWidth);
+        gridmap = new Gridmap(SIZE, player, screenHeight, screenWidth);
         panel = new Panel(player, screenWidth, screenHeight, gridmap);
         animationTimer = new Timer(player);
         gameTimer = new GameTimer(inputControl, panel, gridmap);
