@@ -97,15 +97,15 @@ public class Player {
         return y;
     }
     
-    public void render(GraphicsContext gcFg) {
+    public void render(GraphicsContext gc) {
         if (directions[1]) {
-            gcFg.drawImage(movingCurImageL, playerCenterX, playerCenterY);
+            gc.drawImage(movingCurImageL, playerCenterX, playerCenterY);
         } else if (directions[3]) {
-            gcFg.drawImage(movingCurImageR, playerCenterX, playerCenterY);
+            gc.drawImage(movingCurImageR, playerCenterX, playerCenterY);
         } else if (directions[0]) {
-            gcFg.drawImage(movingCurImageUp, playerCenterX, playerCenterY);
+            gc.drawImage(movingCurImageUp, playerCenterX, playerCenterY);
         } else {
-            gcFg.drawImage(movingCurImageDown, playerCenterX, playerCenterY);
+            gc.drawImage(movingCurImageDown, playerCenterX, playerCenterY);
         }
 
     }

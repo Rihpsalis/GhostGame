@@ -4,17 +4,13 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
 public class Panel extends Canvas {
-    //Grapics Context für Hintergrund
-    private final GraphicsContext gcBg;
-    //Grapics Context für Vordergrund
-    private final GraphicsContext gcFg;
+    private final GraphicsContext gc;
     private final Player player;
     private Gridmap gridmap;
 
     public Panel(Player player, double screenWidth, double screenHeight, Gridmap gridmap) {
         super(screenWidth,screenHeight); // screenWidth,screenHeight implement
-        gcBg = this.getGraphicsContext2D();
-        gcFg = this.getGraphicsContext2D();
+        gc = this.getGraphicsContext2D();
         this.player = player;
         this.gridmap = gridmap;
 
@@ -22,8 +18,8 @@ public class Panel extends Canvas {
     }
 
     public void render() {
-        gridmap.render(gcBg);
-        player.render(gcFg);
+        gridmap.render(gc);
+        player.render(gc);
 
 
     }

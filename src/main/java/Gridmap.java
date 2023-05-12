@@ -90,16 +90,16 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
         }
 
     }
-    public void render(GraphicsContext gcBg) {
+    public void render(GraphicsContext gc) {
         System.out.println("X: " + (int) playerX/ terrainSize + " Y: " + (int) playerY/ terrainSize);
         for (int i = 0; i < gridmapHeight; i++) {
             for (int j = 0; j < gridmapWidth; j++) {
                 if (gridmapChar2D[j][i] == 'g') {
-                    gcBg.drawImage(grass,j* terrainSize + playerX,i* terrainSize + playerY);
+                    gc.drawImage(grass,j* terrainSize + playerX,i* terrainSize + playerY);
                 } else if (gridmapChar2D[j][i] == 'w') {
-                    gcBg.drawImage(water,j* terrainSize + playerX,i* terrainSize + playerY);
+                    gc.drawImage(water,j* terrainSize + playerX,i* terrainSize + playerY);
                 } else if (gridmapChar2D[j][i] == 'd') {
-                    gcBg.drawImage(dirt,j* terrainSize + playerX,i* terrainSize + playerY);
+                    gc.drawImage(dirt,j* terrainSize + playerX,i* terrainSize + playerY);
                 }
             }
         }
@@ -113,10 +113,10 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
                         if (i != 0) {
                             switch (gridmapChar2D[j][i - 1]) {
                                 case 'd' -> {
-                                    gcBg.drawImage(grassToDirt[0], j * terrainSize, terrainSize * i - spriteBorder);
+                                    gc.drawImage(grassToDirt[0], j * terrainSize, terrainSize * i - spriteBorder);
                                 }
                                 case 'w' -> {
-                                    gcBg.drawImage(grassToWater[0], j * terrainSize, terrainSize * i - spriteBorder);
+                                    gc.drawImage(grassToWater[0], j * terrainSize, terrainSize * i - spriteBorder);
                                 }
                             }
                         }
@@ -125,10 +125,10 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
                         if (j != 0) {
                             switch (gridmapChar2D[j - 1][i]) {
                                 case 'd' -> {
-                                    gcBg.drawImage(grassToDirt[1], terrainSize * j - spriteBorder, i * terrainSize);
+                                    gc.drawImage(grassToDirt[1], terrainSize * j - spriteBorder, i * terrainSize);
                                 }
                                 case 'w' -> {
-                                    gcBg.drawImage(grassToWater[1], terrainSize * j - spriteBorder, i * terrainSize);
+                                    gc.drawImage(grassToWater[1], terrainSize * j - spriteBorder, i * terrainSize);
                                 }
                             }
                         }
@@ -137,10 +137,10 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
                         if (i != gridmapHeight - 1) {
                             switch (gridmapChar2D[j][i + 1]) {
                                 case 'd' -> {
-                                    gcBg.drawImage(grassToDirt[2], j * terrainSize, spriteBorder + i * terrainSize);
+                                    gc.drawImage(grassToDirt[2], j * terrainSize, spriteBorder + i * terrainSize);
                                 }
                                 case 'w' -> {
-                                    gcBg.drawImage(grassToWater[2], j * terrainSize, spriteBorder + i * terrainSize);
+                                    gc.drawImage(grassToWater[2], j * terrainSize, spriteBorder + i * terrainSize);
                                 }
                             }
                         }
@@ -149,10 +149,10 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
                         if (j != gridmapWidth - 1) {
                             switch (gridmapChar2D[j + 1][i]) {
                                 case 'd' -> {
-                                    gcBg.drawImage(grassToDirt[3], spriteBorder + j * terrainSize, i * terrainSize);
+                                    gc.drawImage(grassToDirt[3], spriteBorder + j * terrainSize, i * terrainSize);
                                 }
                                 case 'w' -> {
-                                    gcBg.drawImage(grassToWater[3], spriteBorder + j * terrainSize, i * terrainSize);
+                                    gc.drawImage(grassToWater[3], spriteBorder + j * terrainSize, i * terrainSize);
                                 }
                             }
                         }
@@ -161,28 +161,28 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
                         //Oben
                         if (i != 0) {
                             if (gridmapChar2D[j][i - 1] == 'w') {
-                                gcBg.drawImage(dirtToWater[0], j * terrainSize, terrainSize * i - spriteBorder);
+                                gc.drawImage(dirtToWater[0], j * terrainSize, terrainSize * i - spriteBorder);
                             }
                         }
 
                         //Links
                         if (j != 0) {
                             if (gridmapChar2D[j - 1][i] == 'w') {
-                                gcBg.drawImage(dirtToWater[1], terrainSize * j - spriteBorder, i * terrainSize);
+                                gc.drawImage(dirtToWater[1], terrainSize * j - spriteBorder, i * terrainSize);
                             }
                         }
 
                         //Unten
                         if (i != gridmapHeight - 1) {
                             if (gridmapChar2D[j][i + 1] == 'w') {
-                                gcBg.drawImage(dirtToWater[2], j * terrainSize, spriteBorder + i * terrainSize);
+                                gc.drawImage(dirtToWater[2], j * terrainSize, spriteBorder + i * terrainSize);
                             }
                         }
 
                         //Rechts
                         if (j != gridmapWidth - 1) {
                             if (gridmapChar2D[j + 1][i] == 'w') {
-                                gcBg.drawImage(dirtToWater[3], spriteBorder + j * terrainSize, i * terrainSize);
+                                gc.drawImage(dirtToWater[3], spriteBorder + j * terrainSize, i * terrainSize);
                             }
                         }
                     }
