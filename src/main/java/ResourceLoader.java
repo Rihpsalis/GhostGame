@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class ResourceLoader {
         /* The path under your src/main/resources folder where you store your images... */
-        private static final String ROOT = "src/main/resources";
+        private static final String ROOT = "/";
 
         /**
          * @param relativePath relative path (without leading slash) starting from resource root directory
