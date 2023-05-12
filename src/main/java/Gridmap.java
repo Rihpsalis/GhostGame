@@ -29,19 +29,17 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
     private double screenHeight;
     private double screenWidth;
     private final int terrainSize;
-    private String programStatus;
 
     // Tiles visible on Screen
     private int onScreenX;
     private int onScreenY;
     
 
-    public Gridmap(int SIZE, Player player, double screenHeight, double screenWidth, String programStatus, String gridmapInUse) {
-        this.programStatus = programStatus;
+    public Gridmap(int SIZE, Player player, double screenHeight, double screenWidth, String gridmapInUse) {
         this.gridmapInUse = gridmapInUse;
         this.screenHeight = screenHeight;
         this.screenWidth = screenWidth;
-        gridmap = new Image(programStatus + "/resources/terrain/gridmap/" + gridmapInUse + ".png");
+        gridmap = new Image(getClass().getResource("terrain/gridmap/" + gridmapInUse + ".png").toString());
         this.terrainSize = SIZE / 4;
         spriteBorder = this.terrainSize / 2;
         this.player = player;
@@ -69,7 +67,7 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
         gridmapHeight = (int) gridmap.getHeight();
         gridmapChar2D = new char[gridmapWidth][gridmapHeight];
         try {
-            fileReader = new FileReader("src/" + programStatus + "/resources/terrain/gridmap/" + gridmapInUse + "_values.txt");
+            fileReader = new FileReader("src/main/resources/terrain/gridmap/" + gridmapInUse + "_values.txt");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }

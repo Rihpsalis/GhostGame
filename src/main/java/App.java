@@ -30,10 +30,6 @@ public class App extends Application {
     private final int SIZE = 200;
 
     private Group group;
-
-    //Defines if Test or Main
-    private String programStatus = "main";
-
     private String gridmapInUse = "Gridmap";
     public void init() throws IOException {
         screenBounds = Screen.getPrimary().getBounds();
@@ -50,7 +46,7 @@ public class App extends Application {
         scene = new Scene(group);
         player = new Player(directions, SIZE, screenHeight, screenWidth);
         inputControl = new InputControl(scene, player, directions);
-        gridmap = new Gridmap(SIZE, player, screenHeight, screenWidth, programStatus, gridmapInUse);
+        gridmap = new Gridmap(SIZE, player, screenHeight, screenWidth, gridmapInUse);
         panel = new Panel(player, screenWidth, screenHeight, gridmap);
         animationTimer = new Timer(player);
         gameTimer = new GameTimer(inputControl, panel, gridmap);
