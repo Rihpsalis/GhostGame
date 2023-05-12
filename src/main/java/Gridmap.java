@@ -10,7 +10,6 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
     private Image gridmap;
     private PixelReader pixelReader;
     private Image water, dirt, grass;
-    private int terrainSize;
     private int gridmapHeight;
     private int gridmapWidth;
     private Player player;
@@ -29,9 +28,7 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
     private String gridmapInUse;
     private double screenHeight;
     private double screenWidth;
-    private final int SIZE;
-
-    //Defines if Test or Main
+    private final int terrainSize;
     private String programStatus;
 
     // Tiles visible on Screen
@@ -39,38 +36,34 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
     private int onScreenY;
     
 
-    public Gridmap(int SIZE, Player player, double screenHeight, double screenWidth) {
-        programStatus = "main";
-        gridmapInUse = "Gridmap";
+    public Gridmap(int SIZE, Player player, double screenHeight, double screenWidth, String programStatus, String gridmapInUse) {
+        this.programStatus = programStatus;
+        this.gridmapInUse = gridmapInUse;
         this.screenHeight = screenHeight;
         this.screenWidth = screenWidth;
         gridmap = new Image(programStatus + "/resources/terrain/gridmap/" + gridmapInUse + ".png");
-        this.SIZE = SIZE;
-        spriteBorder = terrainSize / 2;
-        this.player = player;/*
-        water = new Image(new File("main/resources/terrain/floor/Water.png").toString(), terrainSize, terrainSize, false, false);
-        dirt = new Image(new File("main/resources/terrain/floor/Dirt.png").toString(), terrainSize, terrainSize, false, false);
-        grass = new Image(new File("main/resources/terrain/floor/Grass.png").toString(), terrainSize, terrainSize, false, false);
-        */ //Debugging
+        this.terrainSize = SIZE / 4;
+        spriteBorder = this.terrainSize / 2;
+        this.player = player;
+        water = new Image(getClass().getResource("/terrain/floor/Water.png").toString(), terrainSize, terrainSize, false, false);
+        dirt = new Image(getClass().getResource("/terrain/floor/Dirt.png").toString(), terrainSize, terrainSize, false, false);
+        grass = new Image(getClass().getResource("/terrain/floor/Grass.png").toString(), terrainSize, terrainSize, false, false);
+        /* //Debugging
         water = new Image(new File("test/resources/terrain/floor/Debug.png").toString(), terrainSize, terrainSize, false, false);
         dirt = new Image(new File("test/resources/terrain/floor/Debug.png").toString(), terrainSize, terrainSize, false, false);
         grass = new Image(new File("test/resources/terrain/floor/Debug.png").toString(), terrainSize, terrainSize, false, false);
-
+        */
         grassToDirt = new Image[4];
-            grassToDirt[0] = new Image(new File("main/resources/terrain/floor/Grass_Dirt_0.png").toString(), terrainSize, terrainSize, false, false);
-            grassToDirt[1] = new Image(new File("main/resources/terrain/floor/Grass_Dirt_1.png").toString(), terrainSize, terrainSize, false, false);
-            grassToDirt[2] = new Image(new File("main/resources/terrain/floor/Grass_Dirt_2.png").toString(), terrainSize, terrainSize, false, false);
-            grassToDirt[3] = new Image(new File("main/resources/terrain/floor/Grass_Dirt_3.png").toString(), terrainSize, terrainSize, false, false);
+        for(int i = 0; i < 4; i++)
+            grassToDirt[i] = new Image(getClass().getResource("/terrain/floor/Grass_Dirt_" + i + ".png").toString(), terrainSize, terrainSize, false, false);
+
         grassToWater = new Image[4];
-            grassToWater[0] = new Image(new File("main/resources/terrain/floor/Grass_Water_0.png").toString(), terrainSize, terrainSize, false, false);
-            grassToWater[1] = new Image(new File("main/resources/terrain/floor/Grass_Water_1.png").toString(), terrainSize, terrainSize, false, false);
-            grassToWater[2] = new Image(new File("main/resources/terrain/floor/Grass_Water_2.png").toString(), terrainSize, terrainSize, false, false);
-            grassToWater[3] = new Image(new File("main/resources/terrain/floor/Grass_Water_3.png").toString(), terrainSize, terrainSize, false, false);
+        for(int i = 0; i < 4; i++)
+            grassToWater[0] = new Image(getClass().getResource("/terrain/floor/Grass_Water_" + i + ".png").toString(), terrainSize, terrainSize, false, false);
+
         dirtToWater = new Image[4];
-            dirtToWater[0] = new Image(new File("main/resources/terrain/floor/Dirt_Water_0.png").toString(), terrainSize, terrainSize, false, false);
-            dirtToWater[1] = new Image(new File("main/resources/terrain/floor/Dirt_Water_1.png").toString(), terrainSize, terrainSize, false, false);
-            dirtToWater[2] = new Image(new File("main/resources/terrain/floor/Dirt_Water_2.png").toString(), terrainSize, terrainSize, false, false);
-            dirtToWater[3] = new Image(new File("main/resources/terrain/floor/Dirt_Water_3.png").toString(), terrainSize, terrainSize, false, false);
+        for(int i = 0; i < 4; i++)
+            dirtToWater[0] = new Image(getClass().getResource("/terrain/floor/Dirt_Water_" + i + ".png").toString(), terrainSize, terrainSize, false, false);
 
         gridmapWidth = (int) gridmap.getWidth();
         gridmapHeight = (int) gridmap.getHeight();
@@ -98,19 +91,19 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
 
     }
     public void render(GraphicsContext gcBg) {
-        System.out.println("X: " + (int) playerX/terrainSize + " Y: " + (int) playerY/terrainSize);
+        System.out.println("X: " + (int) playerX/ terrainSize + " Y: " + (int) playerY/ terrainSize);
         for (int i = 0; i < gridmapHeight; i++) {
             for (int j = 0; j < gridmapWidth; j++) {
                 if (gridmapChar2D[j][i] == 'g') {
-                    gcBg.drawImage(grass,j*terrainSize + playerX,i*SIZE + playerY);
+                    gcBg.drawImage(grass,j* terrainSize + playerX,i* terrainSize + playerY);
                 } else if (gridmapChar2D[j][i] == 'w') {
-                    gcBg.drawImage(water,j*terrainSize + playerX,i*terrainSize + playerY);
+                    gcBg.drawImage(water,j* terrainSize + playerX,i* terrainSize + playerY);
                 } else if (gridmapChar2D[j][i] == 'd') {
-                    gcBg.drawImage(dirt,j*terrainSize + playerX,i*terrainSize + playerY);
+                    gcBg.drawImage(dirt,j* terrainSize + playerX,i* terrainSize + playerY);
                 }
             }
         }
-/*
+        /*
         for (int i = 0; i < gridmapHeight; i++) {
             for (int j = 0; j < gridmapWidth; j++) {
                 //System.out.println("i: " + i + " j: " + j);

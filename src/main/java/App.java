@@ -21,16 +21,20 @@ public class App extends Application {
     private BorderPane bp;
     private Scene scene;
     private Rectangle2D screenBounds;
-    private double screenHeight;
-    private double screenWidth;
+    private double screenHeight, screenWidth;
     private GameTimer gameTimer;
     private boolean[] directions;
     private Gridmap gridmap;
+
     //Skalierungs Größe
     private final int SIZE = 200;
-    private Group group;
-    private ResourceLoader resourceLoader;
 
+    private Group group;
+
+    //Defines if Test or Main
+    private String programStatus = "main";
+
+    private String gridmapInUse = "Gridmap";
     public void init() throws IOException {
         screenBounds = Screen.getPrimary().getBounds();
         screenHeight = screenBounds.getHeight();
@@ -46,7 +50,7 @@ public class App extends Application {
         scene = new Scene(group);
         player = new Player(directions, SIZE, screenHeight, screenWidth);
         inputControl = new InputControl(scene, player, directions);
-        gridmap = new Gridmap(SIZE, player, resourceLoader, screenHeight, screenWidth);
+        gridmap = new Gridmap(SIZE, player, screenHeight, screenWidth, programStatus, gridmapInUse);
         panel = new Panel(player, screenWidth, screenHeight, gridmap);
         animationTimer = new Timer(player);
         gameTimer = new GameTimer(inputControl, panel, gridmap);

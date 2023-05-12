@@ -3,8 +3,6 @@ package main.java;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
-import java.io.File;
-
 public class Player {
     private final Image[] movingImagesR;
     private Image movingCurImageR;
@@ -32,26 +30,26 @@ public class Player {
     private int playerCenterY;
 
     public Player(boolean[] directions, double size, double screenHeight, double screenWidth) {
-        this.playerSize = size / 1.3;
+        this.playerSize = size;
 
         movingImagesR = new Image[4];
         for (int i = 0; i < 4; i++)
-            movingImagesR[i] = new Image(new File("main/resources/player/MovingRight_" + i + ".png").toString(), playerSize, playerSize, false, false);
+            movingImagesR[i] = new Image(getClass().getResource("/player/MovingRight_" + i + ".png").toString(), playerSize, playerSize, false, false);
         movingCurImageR = movingImagesR[0];
 
         movingImagesL = new Image[4];
         for (int i = 0; i < 4; i++)
-            movingImagesL[i] = new Image(new File("main/resources/player/MovingLeft_" + i + ".png").toString(), playerSize, playerSize, false, false);
+            movingImagesL[i] = new Image(getClass().getResource("/player/MovingLeft_" + i + ".png").toString(), playerSize, playerSize, false, false);
         movingCurImageL = movingImagesL[0];
 
         movingImagesUp = new Image[4];
         for (int i = 0; i < 4; i++)
-            movingImagesUp[i] = new Image(new File("main/resources/player/MovingUp_" + i + ".png").toString(), playerSize, playerSize, false, false);
+            movingImagesUp[i] = new Image(getClass().getResource("/player/MovingUp_" + i + ".png").toString(), playerSize, playerSize, false, false);
         movingCurImageUp = movingImagesUp[0];
 
         movingImagesDown = new Image[4];
         for (int i = 0; i < 4; i++)
-            movingImagesDown[i] = new Image(new File("main/resources/player/MovingDown_" + i + ".png").toString(), playerSize, playerSize, false, false);
+            movingImagesDown[i] = new Image(getClass().getResource("/player/MovingDown_" + i + ".png").toString(), playerSize, playerSize, false, false);
         movingCurImageDown = movingImagesDown[0];
 
         this.directions = directions;
