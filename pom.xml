@@ -9,7 +9,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<mainClass>Main</mainClass>
+		<mainClass>ghostgame.Main</mainClass>
 		<vs.java>18</vs.java>
 		<vs.javafx>18.0.2</vs.javafx>
 		<vs.maven-compiler-plugin>3.10.1</vs.maven-compiler-plugin>
