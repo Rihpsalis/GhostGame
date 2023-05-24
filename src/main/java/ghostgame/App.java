@@ -51,17 +51,14 @@ public class App extends Application {
 		animationTimer = new Timer(player);
 		gameTimer = new GameTimer(inputControl, panel, gridmap);
 
+		scene.setFill(Color.DARKGRAY);
 		bp.setCenter(panel);
 
 		stage.setTitle("Ghost Game");
 		stage.setScene(scene);
-//		stage.setMinHeight(screenHeight);
-//		stage.setMinWidth(screenWidth);
-//		stage.setResizable(false);
-		stage.setFullScreen(false);
-//		stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
-		scene.setFill(Color.DARKGRAY);
-
+		stage.setFullScreenExitHint("Drücke Esc-Taste, um Vollbildmodus zu verlassen");
+		stage.setFullScreen(true);
+		stage.setOnCloseRequest(e -> System.exit(0));
 		stage.show();
 
 		animationTimer.start();
