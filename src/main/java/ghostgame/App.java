@@ -12,6 +12,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class App extends Application {
+
 	// Was genau ist das?
 	private static final int SIZE = 200;
 
@@ -31,7 +32,7 @@ public class App extends Application {
 		var screenWidth = screenBounds.getWidth();
 
 		var gridmap = new Gridmap(SIZE, MAP_CONTENT_PATH, MAP_IMAGE_PATH);
-		player = new Player(SIZE, screenHeight, screenWidth);
+		player = new Player(SIZE);
 		player.setSpeed(8.0);
 
 		var rootPane = new BorderPane();
@@ -72,9 +73,12 @@ public class App extends Application {
 				gc.translate(-player.getX(), -player.getY());
 				gridmap.render(gc);
 				gc.restore();
-				var centerX = (int) (scene.getWidth() - player.getSize()) / 2;
-				var centerY = (int) (scene.getHeight() - player.getSize()) / 2;
-				player.render(gc, centerX, centerY);
+
+				gc.save();
+				gc.translate((int) (scene.getWidth() - player.getSize()) / 2 - player.getX(),
+						(int) (scene.getHeight() - player.getSize()) / 2 - player.getY());
+				player.render(gc);
+				gc.restore();
 			}
 		};
 

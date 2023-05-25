@@ -44,7 +44,7 @@ public class Player {
 	// Was genau ist diese "Size", die Größe des Sprite?
 	private double size;
 
-	public Player(double size, double screenHeight, double screenWidth) {
+	public Player(double size) {
 		this.size = size;
 
 		animationMovingRight = new SpriteAnimation(Duration.millis(100), //
@@ -134,13 +134,11 @@ public class Player {
 		animationStandingStill.stop();
 	}
 
-	// TODO Sollte nicht der Player an seiner eigenen Position gezeichnet werden und die Kamera der
-	// Spielszene dafür sorgen, dass er immer in der Mitte des Fensters erscheint?
-	public void render(GraphicsContext gc, double screenX, double screenY) {
+	public void render(GraphicsContext gc) {
 		var animation = selectAnimation();
-		gc.drawImage(animation.currentSprite(), screenX, screenY);
+		gc.drawImage(animation.currentSprite(), x, y);
 		if (debug) {
-			drawPlayerInfo(gc, animation, screenX, screenY);
+			drawPlayerInfo(gc, animation, x, y);
 		}
 	}
 
