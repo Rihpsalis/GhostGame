@@ -15,14 +15,13 @@ public class App extends Application {
 
 	// Als Programmparameter übergeben?
 	private static final String MAP_NAME = "GridMap";
-	private static final String MAP_CONTENT_PATH = "terrain/gridmap/%s_values.txt".formatted(MAP_NAME);
 
 	private Player player;
 	private AnimationTimer gameClock;
 
 	@Override
 	public void start(Stage stage) {
-		var gridmap = new Gridmap(TILESIZE, MAP_CONTENT_PATH);
+		var gridmap = new Gridmap(TILESIZE, "terrain/gridmap/%s_values.txt".formatted(MAP_NAME));
 		player = new Player(4 * TILESIZE);
 		player.setX(30);
 		player.setY(20);
@@ -32,11 +31,9 @@ public class App extends Application {
 		var scene = new Scene(rootPane, 1280, 800, Color.gray(0.2));
 
 		var canvas = new Canvas(scene.getWidth(), scene.getHeight());
-		var gc = canvas.getGraphicsContext2D();
-
-		// Soll der Canvas sich an die Größe der Scene anpassen?
 		canvas.widthProperty().bind(scene.widthProperty());
 		canvas.heightProperty().bind(scene.heightProperty());
+		var gc = canvas.getGraphicsContext2D();
 
 		rootPane.setCenter(canvas);
 
@@ -45,15 +42,15 @@ public class App extends Application {
 		stage.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
 			switch (e.getCode()) {
 			case F11 -> stage.setFullScreen(true);
-			case DIGIT0 -> {
+			case DIGIT0 -> { // Links oben
 				player.setX(0);
 				player.setY(0);
 			}
-			case C -> {
+			case C -> { // Mitte
 				player.setX(gridmap.getNumCols() * 0.5);
 				player.setY(gridmap.getNumRows() * 0.5);
 			}
-			case Z -> {
+			case Z -> { // Rechts unten
 				player.setX(gridmap.getNumCols());
 				player.setY(gridmap.getNumRows());
 			}
@@ -62,7 +59,6 @@ public class App extends Application {
 			}
 			}
 		});
-		stage.show();
 
 		var playerControl = new PlayerControl(scene);
 		gameClock = new AnimationTimer() {
@@ -92,6 +88,7 @@ public class App extends Application {
 			}
 		};
 
+		stage.show();
 		player.startAnimations();
 		gameClock.start();
 	}
