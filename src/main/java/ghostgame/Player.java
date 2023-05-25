@@ -3,12 +3,17 @@ package ghostgame;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 
 /**
  * Der Geist.
  */
 public class Player {
+
+	public static boolean debug = true;
 
 	public static final Point2D DIRECTION_NONE = new Point2D(0, 0);
 
@@ -128,7 +133,11 @@ public class Player {
 	// TODO Sollte nicht der Player an seiner eigenen Position gezeichnet werden und die Kamera der
 	// Spielszene dafür sorgen, dass er immer in der Mitte des Fensters erscheint?
 	public void render(GraphicsContext gc) {
-		gc.drawImage(selectAnimation().currentSprite(), screenCenterX, screenCenterY);
+		var animation = selectAnimation();
+		gc.drawImage(animation.currentSprite(), screenCenterX, screenCenterY);
+		if (debug) {
+			drawAnimationInfo(gc, animation);
+		}
 	}
 
 	// Bei diagonalen Richtungen man sich halt entscheiden, welche Animation man nimmt.
@@ -146,5 +155,25 @@ public class Player {
 			return animationMovingRight;
 		}
 		return animationStandingStill;
+	}
+
+	private void drawAnimationInfo(GraphicsContext gc, SpriteAnimation animation) {
+		var animationName = "Animation";
+		if (animation == animationMovingDown) {
+			animationName = "Moving Down";
+		} else if (animation == animationMovingUp) {
+			animationName = "Moving Up";
+		} else if (animation == animationMovingLeft) {
+			animationName = "Moving Left";
+		} else if (animation == animationMovingRight) {
+			animationName = "Moving Right";
+		} else if (animation == animationStandingStill) {
+			animationName = "Standing Still";
+		}
+		var animationText = "%s (%s) ,frame %d)".formatted(animationName, animation.getDuration(), animation.getFrame());
+		gc.setFill(Color.BLUE);
+		gc.setFont(Font.font("Sans", FontWeight.BLACK, 16));
+		// das sollte natürlich an der Position des Geistes gezeichnet werden
+		gc.fillText(animationText, screenCenterX, screenCenterY - 5);
 	}
 }

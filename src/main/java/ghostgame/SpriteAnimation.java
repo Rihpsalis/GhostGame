@@ -73,6 +73,14 @@ public class SpriteAnimation {
 		animation.stop();
 	}
 
+	public Duration getDuration() {
+		return animation.getCycleDuration();
+	}
+
+	public int getFrame() {
+		return frame;
+	}
+
 	public Image currentSprite() {
 		return sprites[frame];
 	}
