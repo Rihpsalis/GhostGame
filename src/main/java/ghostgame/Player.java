@@ -174,7 +174,7 @@ public class Player {
 		} else if (animation == animationStandingStill) {
 			animationName = "Standing Still";
 		}
-		var animationText = "%s (%s ,frame %d)".formatted(animationName, animation.getDuration(), animation.getFrame());
+		var animationText = "%s (%s, frame %d)".formatted(animationName, animation.getDuration(), animation.getFrame());
 		gc.setFill(Color.BLUE);
 		gc.setFont(Font.font("Sans", FontWeight.BLACK, 16));
 		gc.fillText(animationText, screenX, screenY - 5);

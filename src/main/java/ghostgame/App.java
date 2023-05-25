@@ -1,13 +1,9 @@
 package ghostgame;
 
-import java.io.IOException;
-
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -16,46 +12,35 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class App extends Application {
-
 	// Was genau ist das?
 	private static final int SIZE = 200;
 
-	private Gridmap gridmap;
+	// Als Programmparameter übergeben?
 	private String gridmapInUse = "Gridmap";
+
 	private Player player;
-	private PlayerControl playerControl;
-	private Scene scene;
-	private Canvas canvas;
-	private GraphicsContext gc;
 	private AnimationTimer gameClock;
-
-	// Noch mal überdenken:
-	private Rectangle2D screenBounds;
-	private double screenHeight, screenWidth;
-
-	@Override
-	public void init() throws IOException {
-		screenBounds = Screen.getPrimary().getBounds();
-		screenHeight = screenBounds.getHeight();
-		screenWidth = screenBounds.getWidth();
-	}
 
 	@Override
 	public void start(Stage stage) {
-		var rootPane = new BorderPane();
-		scene = new Scene(rootPane, 800, 600, Color.DARKGRAY);
+		// Noch mal überdenken:
+		var screenBounds = Screen.getPrimary().getBounds();
+		var screenHeight = screenBounds.getHeight();
+		var screenWidth = screenBounds.getWidth();
+
+		var gridmap = new Gridmap(SIZE, screenHeight, screenWidth, gridmapInUse);
 		player = new Player(SIZE, screenHeight, screenWidth);
 		player.setSpeed(8.0);
-		playerControl = new PlayerControl(scene);
-		gridmap = new Gridmap(SIZE, player, screenHeight, screenWidth, gridmapInUse);
-		canvas = new Canvas(screenWidth, screenHeight);
-		gc = canvas.getGraphicsContext2D();
+
+		var rootPane = new BorderPane();
+		var scene = new Scene(rootPane, 800, 600, Color.DARKGRAY);
+		var canvas = new Canvas(screenWidth, screenHeight);
+		var gc = canvas.getGraphicsContext2D();
 
 		rootPane.setCenter(canvas);
 
 		stage.setTitle("Ghost Game");
 		stage.setScene(scene);
-		stage.setFullScreen(true);
 		stage.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
 			if (e.getCode() == KeyCode.F11) {
 				stage.setFullScreen(true);
@@ -63,18 +48,20 @@ public class App extends Application {
 		});
 		stage.show();
 
-		player.startAnimations();
+		var playerControl = new PlayerControl(scene);
 		gameClock = new AnimationTimer() {
 			@Override
 			public void handle(long now) {
 				playerControl.steerPlayer(player);
-				gridmap.update();
+				gridmap.update(player);
 				gridmap.render(gc);
 				var playerScreenX = (int) (scene.getWidth() - player.getSize()) / 2;
 				var playerScreenY = (int) (scene.getHeight() - player.getSize()) / 2;
 				player.render(gc, playerScreenX, playerScreenY);
 			}
 		};
+
+		player.startAnimations();
 		gameClock.start();
 	}
 

@@ -25,7 +25,6 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
 	private int gridmapHeight;
 	private int gridmapWidth;
 
-	private Player player;
 	private double playerX;
 	private double playerY;
 
@@ -36,9 +35,7 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
 	private final int terrainSize;
 
 	// Sollte die "Welt" wirklich mit Screenkoordinaten/-größen arbeiten?
-	public Gridmap(int size, Player player, double screenHeight, double screenWidth, String gridmapInUse) {
-		this.player = player;
-
+	public Gridmap(int size, double screenHeight, double screenWidth, String gridmapInUse) {
 		this.screenHeight = screenHeight;
 		this.screenWidth = screenWidth;
 
@@ -158,7 +155,7 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
 	}
 
 	// Diesen Code verstehe ich nicht.
-	public void update() {
+	public void update(Player player) {
 		playerX = player.getX();
 		playerY = -player.getY();
 	}
