@@ -1,101 +1,103 @@
 package ghostgame;
 
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
+/**
+ * Der Geist.
+ */
 public class Player {
-	private final Image[] movingImagesR;
-	private Image movingCurImageR;
-	private int movingImageIdxR;
 
-	private final Image[] movingImagesL;
-	private Image movingCurImageL;
-	private int movingImageIdxL;
+	public static final Point2D DIRECTION_NONE = new Point2D(0, 0);
 
-	private final Image[] movingImagesUp;
-	private Image movingCurImageUp;
-	private int movingImageIdxUp;
+	public static final Point2D DIRECTION_N = new Point2D(0, -1);
+	public static final Point2D DIRECTION_S = new Point2D(0, 1);
+	public static final Point2D DIRECTION_E = new Point2D(-1, 0);
+	public static final Point2D DIRECTION_W = new Point2D(1, 0);
 
-	private final Image[] movingImagesDown;
-	private Image movingCurImageDown;
-	private int movingImageIdxDown;
+	public static final Point2D DIRECTION_NW = DIRECTION_N.add(DIRECTION_W);
+	public static final Point2D DIRECTION_NE = DIRECTION_N.add(DIRECTION_E);
+	public static final Point2D DIRECTION_SW = DIRECTION_S.add(DIRECTION_W);
+	public static final Point2D DIRECTION_SE = DIRECTION_S.add(DIRECTION_E);
 
+	private final SpriteAnimation animationMovingRight;
+	private final SpriteAnimation animationMovingLeft;
+	private final SpriteAnimation animationMovingUp;
+	private final SpriteAnimation animationMovingDown;
+	private final SpriteAnimation animationStandingStill;
+
+	// In welchem Koordinatensystem?
 	private double x;
 	private double y;
-	private boolean[] directions;
+
+	private Point2D moveDirection;
+
+	private double speed = 3.0;
+
+	// Was genau ist diese "Size", die Größe des Sprite?
 	private double playerSize;
-	private double screenHeight;
-	private double screenWidth;
-	private int playerCenterX;
-	private int playerCenterY;
 
-	public Player(boolean[] directions, double SIZE, double screenHeight, double screenWidth) {
-		this.playerSize = SIZE;
+	// Da würde ich nochmal drüber nachdenken
+	private int screenCenterX;
+	private int screenCenterY;
 
-		movingImagesR = new Image[4];
-		for (int i = 0; i < 4; i++)
-			movingImagesR[i] = new Image(ResourceLoader.urlFromRelPath("player/MovingRight_" + i + ".png").toString(),
-					playerSize, playerSize, false, false);
-
-		movingCurImageR = movingImagesR[0];
-
-		movingImagesL = new Image[4];
-		for (int i = 0; i < 4; i++)
-			movingImagesL[i] = new Image(ResourceLoader.urlFromRelPath("player/MovingLeft_" + i + ".png").toString(),
-					playerSize, playerSize, false, false);
-		movingCurImageL = movingImagesL[0];
-
-		movingImagesUp = new Image[4];
-		for (int i = 0; i < 4; i++)
-			movingImagesUp[i] = new Image(ResourceLoader.urlFromRelPath("player/MovingUp_" + i + ".png").toString(),
-					playerSize, playerSize, false, false);
-		movingCurImageUp = movingImagesUp[0];
-
-		movingImagesDown = new Image[4];
-		for (int i = 0; i < 4; i++)
-			movingImagesDown[i] = new Image(ResourceLoader.urlFromRelPath("player/MovingDown_" + i + ".png").toString(),
-					playerSize, playerSize, false, false);
-		movingCurImageDown = movingImagesDown[0];
-
-		this.directions = directions;
-		this.screenHeight = screenHeight;
-		this.screenWidth = screenWidth;
-		playerCenterX = (int) (screenWidth - playerSize) / 2;
-		playerCenterY = (int) (screenHeight - playerSize) / 2;
+	private Image sprite(String path) {
+		return new Image(ResourceLoader.urlFromRelPath(path).toString(), playerSize, playerSize, false, false);
 	}
 
-	public void nextImage() {
-		if (movingImageIdxR == 4)
-			movingImageIdxR = 0;
-		movingCurImageR = movingImagesR[movingImageIdxR++];
+	public Player(double size, double screenHeight, double screenWidth) {
+		this.playerSize = size;
 
-		if (movingImageIdxL == 4)
-			movingImageIdxL = 0;
-		movingCurImageL = movingImagesL[movingImageIdxL++];
+		animationMovingRight = new SpriteAnimation(//
+				sprite("player/MovingRight_0.png"), //
+				sprite("player/MovingRight_1.png"), //
+				sprite("player/MovingRight_2.png"), //
+				sprite("player/MovingRight_3.png"));
 
-		if (movingImageIdxUp == 4)
-			movingImageIdxUp = 0;
-		movingCurImageUp = movingImagesUp[movingImageIdxUp++];
+		animationMovingLeft = new SpriteAnimation(//
+				sprite("player/MovingLeft_0.png"), //
+				sprite("player/MovingLeft_1.png"), //
+				sprite("player/MovingLeft_2.png"), //
+				sprite("player/MovingLeft_3.png"));
 
-		if (movingImageIdxDown == 4)
-			movingImageIdxDown = 0;
-		movingCurImageDown = movingImagesDown[movingImageIdxDown++];
+		animationMovingDown = new SpriteAnimation(//
+				sprite("player/MovingDown_0.png"), //
+				sprite("player/MovingDown_1.png"), //
+				sprite("player/MovingDown_2.png"), //
+				sprite("player/MovingDown_3.png"));
+
+		animationMovingUp = new SpriteAnimation(//
+				sprite("player/MovingUp_0.png"), //
+				sprite("player/MovingUp_1.png"), //
+				sprite("player/MovingUp_2.png"), //
+				sprite("player/MovingUp_3.png"));
+
+		animationStandingStill = new SpriteAnimation(//
+				sprite("player/StandingStill_0.png"), //
+				sprite("player/StandingStill_1.png"), //
+				sprite("player/StandingStill_2.png"), //
+				sprite("player/StandingStill_3.png"));
+
+		moveDirection = DIRECTION_NONE;
+
+		// Siehe Kommentar oben
+		screenCenterX = (int) (screenWidth - playerSize) / 2;
+		screenCenterY = (int) (screenHeight - playerSize) / 2;
 	}
 
-	public double wMove() {
-		return y = y - 3;
+	public double getSpeed() {
+		return speed;
 	}
 
-	public double aMove() {
-		return x = x - 3;
+	public void setSpeed(double speed) {
+		this.speed = speed;
 	}
 
-	public double sMove() {
-		return y = y + 3;
-	}
-
-	public double dMove() {
-		return x = x + 3;
+	public void move() {
+		var velocity = moveDirection.multiply(speed);
+		x += velocity.getX();
+		y += velocity.getY();
 	}
 
 	public double getX() {
@@ -106,16 +108,42 @@ public class Player {
 		return y;
 	}
 
-	public void render(GraphicsContext gc) {
-		if (directions[1]) {
-			gc.drawImage(movingCurImageL, playerCenterX, playerCenterY);
-		} else if (directions[3]) {
-			gc.drawImage(movingCurImageR, playerCenterX, playerCenterY);
-		} else if (directions[0]) {
-			gc.drawImage(movingCurImageUp, playerCenterX, playerCenterY);
-		} else {
-			gc.drawImage(movingCurImageDown, playerCenterX, playerCenterY);
-		}
+	public void setMoveDirection(Point2D moveDirection) {
+		this.moveDirection = moveDirection;
+	}
 
+	public Point2D getMoveDirection() {
+		return moveDirection;
+	}
+
+	public void animate() {
+		// Muss man alle Animationen weiterschalten oder nur die für die aktuelle Bewegungsrichtung?
+		animationMovingLeft.nextFrame();
+		animationMovingRight.nextFrame();
+		animationMovingUp.nextFrame();
+		animationMovingDown.nextFrame();
+	}
+
+	// TODO Sollte nicht der Player an seiner eigenen Position gezeichnet werden und die Kamera der
+	// Spielszene dafür sorgen, dass er immer in der Mitte des Fensters erscheint?
+	public void render(GraphicsContext gc) {
+		gc.drawImage(getAnimationForMoveDirection().currentSprite(), screenCenterX, screenCenterY);
+	}
+
+	// Bei diagonalen Richtungen man sich halt entscheiden, welche Animation man nimmt.
+	private SpriteAnimation getAnimationForMoveDirection() {
+		if (moveDirection.equals(DIRECTION_N)) {
+			return animationMovingUp;
+		}
+		if (moveDirection.equals(DIRECTION_W) || moveDirection.equals(DIRECTION_NW) || moveDirection.equals(DIRECTION_SW)) {
+			return animationMovingLeft;
+		}
+		if (moveDirection.equals(DIRECTION_S)) {
+			return animationMovingDown;
+		}
+		if (moveDirection.equals(DIRECTION_E) || moveDirection.equals(DIRECTION_NE) || moveDirection.equals(DIRECTION_SE)) {
+			return animationMovingRight;
+		}
+		return animationStandingStill;
 	}
 }

@@ -15,7 +15,7 @@ public class GameTimer extends AnimationTimer {
 
 	@Override
 	public void handle(long l) {
-		inputControl.setPlayerCords();
+		inputControl.steerPlayer();
 		gridmap.update();
 		panel.render();
 	}

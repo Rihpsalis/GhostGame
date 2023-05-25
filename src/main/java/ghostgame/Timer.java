@@ -17,7 +17,7 @@ public class Timer extends Thread {
 				e.printStackTrace();
 			}
 
-			player.nextImage();
+			player.animate();
 		}
 	}
 }

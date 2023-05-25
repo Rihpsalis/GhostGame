@@ -1,53 +1,74 @@
 package ghostgame;
 
+import java.util.BitSet;
+
+import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 
 public class InputControl {
-	private Scene scene;
-	private boolean[] directions; // up, left, down, right
-	private Player player;
 
-	public InputControl(Scene scene, Player player, boolean[] directions) {
-		this.scene = scene;
-		this.directions = directions;
+	private static final int LEFT = 0;
+	private static final int RIGHT = 1;
+	private static final int UP = 2;
+	private static final int DOWN = 3;
+
+	private final Player player;
+	private final BitSet pressed = new BitSet(4);
+
+	public InputControl(Scene scene, Player player) {
 		this.player = player;
-
-		scene.setOnKeyPressed(keyEvent -> {
-			switch (keyEvent.getCode()) {
-			case UP, W -> directions[0] = true; // up
-			case LEFT, A -> directions[1] = true; // left
-			case DOWN, S -> directions[2] = true; // down
-			case RIGHT, D -> directions[3] = true; // right
+		scene.setOnKeyPressed(e -> {
+			switch (e.getCode()) {
+			case LEFT, A -> pressed.set(LEFT);
+			case RIGHT, D -> pressed.set(RIGHT);
+			case UP, W -> pressed.set(UP);
+			case DOWN, S -> pressed.set(DOWN);
 			default -> {
+				// ignore
 			}
 			}
 		});
-
-		scene.setOnKeyReleased(keyEvent -> {
-			switch (keyEvent.getCode()) {
-			case UP, W -> directions[0] = false; // up
-			case LEFT, A -> directions[1] = false; // left
-			case DOWN, S -> directions[2] = false; // down
-			case RIGHT, D -> directions[3] = false; // right
+		scene.setOnKeyReleased(e -> {
+			switch (e.getCode()) {
+			case LEFT, A -> pressed.clear(LEFT);
+			case RIGHT, D -> pressed.clear(RIGHT);
+			case UP, W -> pressed.clear(UP);
+			case DOWN, S -> pressed.clear(DOWN);
 			default -> {
+				// ignore
 			}
 			}
 		});
 	}
 
-	// setPlayerCords needed because with this Method Player can move in 2 Directions at the same time.
-	public void setPlayerCords() {
-		if (directions[2])
-			player.sMove();
+	public void steerPlayer() {
+		player.setMoveDirection(computeMoveDirection());
+		player.move();
+	}
 
-		if (directions[0])
-			player.wMove();
-
-		if (directions[1])
-			player.aMove();
-
-		if (directions[3])
-			player.dMove();
-
+	// Hier bildet man die Kombinationen der gedrückten Keys auf Richtungen ab
+	private Point2D computeMoveDirection() {
+		int numKeysPressed = pressed.cardinality();
+		if (numKeysPressed > 2) {
+			return Player.DIRECTION_NONE;
+		}
+		if (pressed.get(UP) && pressed.get(LEFT)) {
+			return Player.DIRECTION_NW;
+		} else if (pressed.get(UP) && pressed.get(RIGHT)) {
+			return Player.DIRECTION_NE;
+		} else if (pressed.get(DOWN) && pressed.get(LEFT)) {
+			return Player.DIRECTION_SW;
+		} else if (pressed.get(DOWN) && pressed.get(RIGHT)) {
+			return Player.DIRECTION_SE;
+		} else if (pressed.get(UP)) {
+			return Player.DIRECTION_N;
+		} else if (pressed.get(DOWN)) {
+			return Player.DIRECTION_S;
+		} else if (pressed.get(LEFT)) {
+			return Player.DIRECTION_W;
+		} else if (pressed.get(RIGHT)) {
+			return Player.DIRECTION_E;
+		}
+		return Player.DIRECTION_NONE;
 	}
 }

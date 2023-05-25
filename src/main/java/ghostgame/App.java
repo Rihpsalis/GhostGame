@@ -21,7 +21,6 @@ public class App extends Application {
 	private Rectangle2D screenBounds;
 	private double screenHeight, screenWidth;
 	private GameTimer gameTimer;
-	private boolean[] directions;
 	private Gridmap gridmap;
 
 	// Skalierungs Größe
@@ -39,13 +38,12 @@ public class App extends Application {
 
 	@Override
 	public void start(Stage stage) {
-
-		directions = new boolean[4];
 		bp = new BorderPane();
 		group = new Group(bp);
 		scene = new Scene(group, 800, 600);
-		player = new Player(directions, SIZE, screenHeight, screenWidth);
-		inputControl = new InputControl(scene, player, directions);
+		player = new Player(SIZE, screenHeight, screenWidth);
+		player.setSpeed(8.0);
+		inputControl = new InputControl(scene, player);
 		gridmap = new Gridmap(SIZE, player, screenHeight, screenWidth, gridmapInUse);
 		panel = new Panel(player, screenWidth, screenHeight, gridmap);
 		animationTimer = new Timer(player);
@@ -56,7 +54,6 @@ public class App extends Application {
 
 		stage.setTitle("Ghost Game");
 		stage.setScene(scene);
-		stage.setFullScreenExitHint("Drücke Esc-Taste, um Vollbildmodus zu verlassen");
 		stage.setFullScreen(true);
 		stage.setOnCloseRequest(e -> System.exit(0));
 		stage.show();

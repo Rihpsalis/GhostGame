@@ -5,29 +5,32 @@ import static ghostgame.ResourceLoader.tile;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelReader;
+import javafx.scene.paint.Color;
 
 public class Gridmap { // txt einlesen und ränder hinzufügen
-	private Image gridmap;
-	private PixelReader pixelReader;
-	private Image water, dirt, grass;
+
+	private Image mapImage;
+
+	private Image tileWater;
+	private Image tileDirt;
+	private Image tileGrass;
+	private final Image[] tilesGrassToDirt = new Image[4];
+	private final Image[] tilesGrassToWater = new Image[4];
+	private final Image[] tilesDirtToWater = new Image[4];
+
 	private int gridmapHeight;
 	private int gridmapWidth;
+
 	private Player player;
 	private double playerX;
 	private double playerY;
-	private InputStreamReader reader;
-	private BufferedReader bufferedReader;
-	private char[][] gridmapChar2D;
-	private char[] gridmapChar1D;
-	private String buffer;
 
-	private Image[] grassToDirt;
-	private Image[] grassToWater;
-	private Image[] dirtToWater;
+	private char[][] content2D;
+
 	private int spriteBorder;
 	private String gridmapInUse;
 	private double screenHeight;
@@ -38,74 +41,98 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
 	private int onScreenX;
 	private int onScreenY;
 
+	// Sollte die "Welt" wirklich mit Screenkoordinaten/-größen arbeiten?
 	public Gridmap(int size, Player player, double screenHeight, double screenWidth, String gridmapInUse) {
-		this.gridmapInUse = gridmapInUse;
+		this.player = player;
+
 		this.screenHeight = screenHeight;
 		this.screenWidth = screenWidth;
-		gridmap = ResourceLoader.image("terrain/gridmap/" + gridmapInUse + ".png");
-		this.terrainSize = size / 4;
-		spriteBorder = this.terrainSize / 2;
-		this.player = player;
-		water = tile("terrain/floor/Water.png", terrainSize);
-		dirt = tile("terrain/floor/Dirt.png", terrainSize);
-		grass = tile("terrain/floor/Grass.png", terrainSize);
-		/*
-		 * //Debugging water = new Image(new File("test/resources/terrain/floor/Debug.png").toString(), terrainSize,
-		 * terrainSize, false, false); dirt = new Image(new File("test/resources/terrain/floor/Debug.png").toString(),
-		 * terrainSize, terrainSize, false, false); grass = new Image(new
-		 * File("test/resources/terrain/floor/Debug.png").toString(), terrainSize, terrainSize, false, false);
-		 */
-		grassToDirt = new Image[4];
+		this.gridmapInUse = gridmapInUse;
+
+		terrainSize = size / 4;
+		spriteBorder = terrainSize / 2;
+
+		mapImage = ResourceLoader.image("terrain/gridmap/" + gridmapInUse + ".png");
+		var mapDataURL = ResourceLoader.urlFromRelPath("terrain/gridmap/" + gridmapInUse + "_values.txt");
+
+		// Tiles
+		tileWater = tile("terrain/floor/Water.png", terrainSize);
+		tileDirt = tile("terrain/floor/Dirt.png", terrainSize);
+		tileGrass = tile("terrain/floor/Grass.png", terrainSize);
 		for (int i = 0; i < 4; i++) {
-			grassToDirt[i] = tile("terrain/floor/Grass_Dirt_" + i + ".png", terrainSize);
+			tilesGrassToDirt[i] = tile("terrain/floor/Grass_Dirt_" + i + ".png", terrainSize);
 		}
-		grassToWater = new Image[4];
 		for (int i = 0; i < 4; i++) {
-			grassToWater[0] = tile("terrain/floor/Grass_Water_" + i + ".png", terrainSize);
+			tilesGrassToWater[0] = tile("terrain/floor/Grass_Water_" + i + ".png", terrainSize);
 		}
-		dirtToWater = new Image[4];
 		for (int i = 0; i < 4; i++) {
-			dirtToWater[0] = tile("terrain/floor/Dirt_Water_" + i + ".png", terrainSize);
+			tilesDirtToWater[0] = tile("terrain/floor/Dirt_Water_" + i + ".png", terrainSize);
 		}
-		gridmapWidth = (int) gridmap.getWidth();
-		gridmapHeight = (int) gridmap.getHeight();
-		gridmapChar2D = new char[gridmapWidth][gridmapHeight];
+
+		// Verstehe ich nicht:
+		gridmapWidth = (int) mapImage.getWidth();
+		gridmapHeight = (int) mapImage.getHeight();
+
+		content2D = new char[gridmapWidth][gridmapHeight];
+
+		// Hier sollte man ein "try with resources" verwenden, siehe https://www.baeldung.com/java-try-with-resources
+		BufferedReader reader = null;
 		try {
-			reader = new InputStreamReader(
-					ResourceLoader.urlFromRelPath("terrain/gridmap/" + gridmapInUse + "_values.txt").openStream());
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		bufferedReader = new BufferedReader(reader);
-		System.out.println("Height: " + gridmapHeight + " Width: " + gridmapWidth);
-		for (int i = 0; i < gridmapHeight; i++) {
-			try {
-				buffer = bufferedReader.readLine();
-				gridmapChar1D = buffer.toCharArray();
-				for (int j = 0; j < gridmapWidth; j++) {
-					gridmapChar2D[j][i] = gridmapChar1D[j];
-					System.out.print(gridmapChar2D[j][i]);
+			reader = new BufferedReader(new InputStreamReader(mapDataURL.openStream()));
+			// Hier sollte man besser über das Einlesen der Zeilen iterieren
+			for (int y = 0; y < gridmapHeight; y++) {
+				var line = reader.readLine().toCharArray();
+				for (int x = 0; x < gridmapWidth; x++) {
+					content2D[x][y] = line[x];
 				}
-			} catch (IOException e) {
-				throw new RuntimeException(e);
 			}
-			System.out.println();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException x) {
+					throw new RuntimeException(x);
+				}
+			}
 		}
+
+		// Debugausgabe, Logger verwenden
+		printContent(System.out);
+	}
+
+	private void printContent(PrintStream out) {
+		for (int x = 0; x < gridmapWidth; x++) {
+			for (int y = 0; y < gridmapHeight; y++) {
+				out.print(content2D[x][y]);
+			}
+			out.println();
+		}
+		out.println("Height: " + gridmapHeight + " Width: " + gridmapWidth);
 	}
 
 	public void render(GraphicsContext gc) {
+		gc.setFill(Color.BLACK);
+		gc.fillRect(0, 0, screenWidth, screenHeight);
+
+		// Keine Debugausgabe hier, denn die Methode wird 60-mal pro Sekunde ausgeführt
 //		System.out.println("X: " + (int) playerX / terrainSize + " Y: " + (int) playerY / terrainSize);
-		for (int i = 0; i < gridmapHeight; i++) {
-			for (int j = 0; j < gridmapWidth; j++) {
-				if (gridmapChar2D[j][i] == 'g') {
-					gc.drawImage(grass, j * terrainSize + playerX, i * terrainSize + playerY);
-				} else if (gridmapChar2D[j][i] == 'w') {
-					gc.drawImage(water, j * terrainSize + playerX, i * terrainSize + playerY);
-				} else if (gridmapChar2D[j][i] == 'd') {
-					gc.drawImage(dirt, j * terrainSize + playerX, i * terrainSize + playerY);
+
+		// Auch hier: Was Du wohl möchtest ist, dass der aktuelle Ausschnitt der Welt, den die Kamera definiert,
+		// gezeichnet wird
+		for (int x = 0; x < gridmapWidth; x++) {
+			for (int y = 0; y < gridmapHeight; y++) {
+				if (content2D[x][y] == 'g') {
+					gc.drawImage(tileGrass, x * terrainSize + playerX, y * terrainSize + playerY);
+				} else if (content2D[x][y] == 'w') {
+					gc.drawImage(tileWater, x * terrainSize + playerX, y * terrainSize + playerY);
+				} else if (content2D[x][y] == 'd') {
+					gc.drawImage(tileDirt, x * terrainSize + playerX, y * terrainSize + playerY);
 				}
 			}
 		}
+
 		/*
 		 * for (int i = 0; i < gridmapHeight; i++) { for (int j = 0; j < gridmapWidth; j++) { //System.out.println("i: " + i
 		 * + " j: " + j); switch (gridmapChar2D[j][i]) { case 'g' -> { //Oben if (i != 0) { switch (gridmapChar2D[j][i - 1])
@@ -138,8 +165,10 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
 
 	}
 
+	// Diesen Code verstehe ich nicht. Ich denke, was Du möchtest, ist eine Kamera, die immer den Geist auf dem Bildschirm
+	// zentriert?
 	public void update() {
-		playerX = -player.getX();
+		playerX = player.getX();
 		playerY = -player.getY();
 		onScreenX = (int) Math.ceil(screenWidth / terrainSize);
 		onScreenY = (int) Math.ceil(screenHeight / terrainSize);
