@@ -1,7 +1,5 @@
 package ghostgame;
 
-import static ghostgame.ResourceLoader.tile;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,12 +7,15 @@ import java.io.PrintStream;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
 
-public class Gridmap { // txt einlesen und ränder hinzufügen
+/**
+ * Die Weltkarte.
+ */
+public class Gridmap {
 
 	private Image mapImage;
 
+	private int terrainSize;
 	private Image tileWater;
 	private Image tileDirt;
 	private Image tileGrass;
@@ -24,35 +25,23 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
 
 	private int gridmapHeight;
 	private int gridmapWidth;
-
 	private char[][] content2D;
 
-	private double screenHeight;
-	private double screenWidth;
-	private final int terrainSize;
+	public Gridmap(int size, String mapContentPath, String mapImagePath) {
+		terrainSize = size / 4; // ???
 
-	// Sollte die "Welt" wirklich mit Screenkoordinaten/-größen arbeiten?
-	public Gridmap(int size, double screenHeight, double screenWidth, String gridmapInUse) {
-		this.screenHeight = screenHeight;
-		this.screenWidth = screenWidth;
-
-		terrainSize = size / 4;
-
-		mapImage = ResourceLoader.image("terrain/gridmap/" + gridmapInUse + ".png");
-		var mapDataURL = ResourceLoader.urlFromRelPath("terrain/gridmap/" + gridmapInUse + "_values.txt");
-
-		// Tiles
-		tileWater = tile("terrain/floor/Water.png", terrainSize);
-		tileDirt = tile("terrain/floor/Dirt.png", terrainSize);
-		tileGrass = tile("terrain/floor/Grass.png", terrainSize);
+		mapImage = ResourceLoader.image(mapImagePath);
+		tileWater = ResourceLoader.tile("terrain/floor/Water.png", terrainSize);
+		tileDirt = ResourceLoader.tile("terrain/floor/Dirt.png", terrainSize);
+		tileGrass = ResourceLoader.tile("terrain/floor/Grass.png", terrainSize);
 		for (int i = 0; i < 4; i++) {
-			tilesGrassToDirt[i] = tile("terrain/floor/Grass_Dirt_" + i + ".png", terrainSize);
+			tilesGrassToDirt[i] = ResourceLoader.tile("terrain/floor/Grass_Dirt_" + i + ".png", terrainSize);
 		}
 		for (int i = 0; i < 4; i++) {
-			tilesGrassToWater[0] = tile("terrain/floor/Grass_Water_" + i + ".png", terrainSize);
+			tilesGrassToWater[0] = ResourceLoader.tile("terrain/floor/Grass_Water_" + i + ".png", terrainSize);
 		}
 		for (int i = 0; i < 4; i++) {
-			tilesDirtToWater[0] = tile("terrain/floor/Dirt_Water_" + i + ".png", terrainSize);
+			tilesDirtToWater[0] = ResourceLoader.tile("terrain/floor/Dirt_Water_" + i + ".png", terrainSize);
 		}
 
 		// Verstehe ich nicht:
@@ -64,7 +53,8 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
 		// Hier sollte man ein "try with resources" verwenden, siehe https://www.baeldung.com/java-try-with-resources
 		BufferedReader reader = null;
 		try {
-			reader = new BufferedReader(new InputStreamReader(mapDataURL.openStream()));
+			var contentURL = ResourceLoader.urlFromRelPath(mapContentPath);
+			reader = new BufferedReader(new InputStreamReader(contentURL.openStream()));
 			// Hier sollte man besser über das Einlesen der Zeilen iterieren
 			for (int y = 0; y < gridmapHeight; y++) {
 				var line = reader.readLine().toCharArray();
@@ -83,12 +73,9 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
 				}
 			}
 		}
-
-		// Debugausgabe, Logger verwenden
-		// printContent(System.out);
 	}
 
-	private void printContent(PrintStream out) {
+	public void printContent(PrintStream out) {
 		for (int x = 0; x < gridmapWidth; x++) {
 			for (int y = 0; y < gridmapHeight; y++) {
 				out.print(content2D[x][y]);
@@ -98,23 +85,21 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
 		out.println("Grid rows=" + gridmapHeight + ", cols=" + gridmapWidth + ", tile size=" + terrainSize);
 	}
 
-	public void render(GraphicsContext gc, double dx, double dy) {
-		gc.setFill(Color.BLACK);
-		gc.fillRect(0, 0, screenWidth, screenHeight);
+	private Image tileImageAt(int x, int y) {
+		return switch (content2D[x][y]) {
+		case 'g' -> tileGrass;
+		case 'w' -> tileWater;
+		case 'd' -> tileDirt;
+		default -> null;
+		};
+	}
 
-		// Keine Debugausgabe hier, denn die Methode wird 60-mal pro Sekunde ausgeführt
-//		System.out.println("X: " + (int) playerX / terrainSize + " Y: " + (int) playerY / terrainSize);
-
-		// Auch hier: Was Du wohl möchtest ist, dass der aktuelle Ausschnitt der Welt, den die Kamera definiert,
-		// gezeichnet wird
+	public void render(GraphicsContext gc) {
 		for (int x = 0; x < gridmapWidth; x++) {
 			for (int y = 0; y < gridmapHeight; y++) {
-				if (content2D[x][y] == 'g') {
-					gc.drawImage(tileGrass, x * terrainSize + dx, y * terrainSize + dy);
-				} else if (content2D[x][y] == 'w') {
-					gc.drawImage(tileWater, x * terrainSize + dx, y * terrainSize + dy);
-				} else if (content2D[x][y] == 'd') {
-					gc.drawImage(tileDirt, x * terrainSize + dx, y * terrainSize + dy);
+				var image = tileImageAt(x, y);
+				if (image != null) {
+					gc.drawImage(image, x * terrainSize, y * terrainSize);
 				}
 			}
 		}
