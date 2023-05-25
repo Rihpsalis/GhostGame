@@ -88,7 +88,7 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
 		}
 
 		// Debugausgabe, Logger verwenden
-		printContent(System.out);
+		// printContent(System.out);
 	}
 
 	private void printContent(PrintStream out) {
