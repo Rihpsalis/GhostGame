@@ -42,14 +42,10 @@ public class Player {
 	private double speed = 3.0;
 
 	// Was genau ist diese "Size", die Größe des Sprite?
-	private double playerSize;
-
-	// Da würde ich nochmal drüber nachdenken
-	private int screenCenterX;
-	private int screenCenterY;
+	private double size;
 
 	public Player(double size, double screenHeight, double screenWidth) {
-		this.playerSize = size;
+		this.size = size;
 
 		animationMovingRight = new SpriteAnimation(Duration.millis(100), //
 				sprite("player/MovingRight_0.png"), //
@@ -82,14 +78,14 @@ public class Player {
 				sprite("player/StandingStill_3.png"));
 
 		moveDirection = DIRECTION_NONE;
-
-		// Siehe Kommentar oben
-		screenCenterX = (int) (screenWidth - playerSize) / 2;
-		screenCenterY = (int) (screenHeight - playerSize) / 2;
 	}
 
 	private Image sprite(String path) {
-		return ResourceLoader.image(path, playerSize, playerSize, false, false);
+		return ResourceLoader.image(path, size, size, false, false);
+	}
+
+	public double getSize() {
+		return size;
 	}
 
 	public double getSpeed() {
@@ -132,11 +128,11 @@ public class Player {
 
 	// TODO Sollte nicht der Player an seiner eigenen Position gezeichnet werden und die Kamera der
 	// Spielszene dafür sorgen, dass er immer in der Mitte des Fensters erscheint?
-	public void render(GraphicsContext gc) {
+	public void render(GraphicsContext gc, double screenX, double screenY) {
 		var animation = selectAnimation();
-		gc.drawImage(animation.currentSprite(), screenCenterX, screenCenterY);
+		gc.drawImage(animation.currentSprite(), screenX, screenY);
 		if (debug) {
-			drawAnimationInfo(gc, animation);
+			drawAnimationInfo(gc, animation, screenX, screenY);
 		}
 	}
 
@@ -157,7 +153,7 @@ public class Player {
 		return animationStandingStill;
 	}
 
-	private void drawAnimationInfo(GraphicsContext gc, SpriteAnimation animation) {
+	private void drawAnimationInfo(GraphicsContext gc, SpriteAnimation animation, double screenX, double screenY) {
 		var animationName = "Animation";
 		if (animation == animationMovingDown) {
 			animationName = "Moving Down";
@@ -170,10 +166,9 @@ public class Player {
 		} else if (animation == animationStandingStill) {
 			animationName = "Standing Still";
 		}
-		var animationText = "%s (%s) ,frame %d)".formatted(animationName, animation.getDuration(), animation.getFrame());
+		var animationText = "%s (%s ,frame %d)".formatted(animationName, animation.getDuration(), animation.getFrame());
 		gc.setFill(Color.BLUE);
 		gc.setFont(Font.font("Sans", FontWeight.BLACK, 16));
-		// das sollte natürlich an der Position des Geistes gezeichnet werden
-		gc.fillText(animationText, screenCenterX, screenCenterY - 5);
+		gc.fillText(animationText, screenX, screenY - 5);
 	}
 }

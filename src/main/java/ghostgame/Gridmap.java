@@ -31,15 +31,9 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
 
 	private char[][] content2D;
 
-	private int spriteBorder;
-	private String gridmapInUse;
 	private double screenHeight;
 	private double screenWidth;
 	private final int terrainSize;
-
-	// Tiles visible on Screen
-	private int onScreenX;
-	private int onScreenY;
 
 	// Sollte die "Welt" wirklich mit Screenkoordinaten/-größen arbeiten?
 	public Gridmap(int size, Player player, double screenHeight, double screenWidth, String gridmapInUse) {
@@ -47,10 +41,8 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
 
 		this.screenHeight = screenHeight;
 		this.screenWidth = screenWidth;
-		this.gridmapInUse = gridmapInUse;
 
 		terrainSize = size / 4;
-		spriteBorder = terrainSize / 2;
 
 		mapImage = ResourceLoader.image("terrain/gridmap/" + gridmapInUse + ".png");
 		var mapDataURL = ResourceLoader.urlFromRelPath("terrain/gridmap/" + gridmapInUse + "_values.txt");
@@ -109,7 +101,7 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
 			}
 			out.println();
 		}
-		out.println("Height: " + gridmapHeight + " Width: " + gridmapWidth);
+		out.println("Grid rows=" + gridmapHeight + ", cols=" + gridmapWidth + ", tile size=" + terrainSize);
 	}
 
 	public void render(GraphicsContext gc) {
@@ -165,12 +157,9 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
 
 	}
 
-	// Diesen Code verstehe ich nicht. Ich denke, was Du möchtest, ist eine Kamera, die immer den Geist auf dem Bildschirm
-	// zentriert?
+	// Diesen Code verstehe ich nicht.
 	public void update() {
 		playerX = player.getX();
 		playerY = -player.getY();
-		onScreenX = (int) Math.ceil(screenWidth / terrainSize);
-		onScreenY = (int) Math.ceil(screenHeight / terrainSize);
 	}
 }
