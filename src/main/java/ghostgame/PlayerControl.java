@@ -12,11 +12,9 @@ public class PlayerControl {
 	private static final int UP = 2;
 	private static final int DOWN = 3;
 
-	private final Player player;
 	private final BitSet pressed = new BitSet(4);
 
-	public PlayerControl(Scene scene, Player player) {
-		this.player = player;
+	public PlayerControl(Scene scene) {
 		scene.setOnKeyPressed(e -> {
 			switch (e.getCode()) {
 			case LEFT, A -> pressed.set(LEFT);
@@ -41,32 +39,41 @@ public class PlayerControl {
 		});
 	}
 
-	public void steerPlayer() {
+	public void steerPlayer(Player player) {
 		player.setMoveDirection(computeMoveDirection());
 		player.move();
 	}
 
-	// Hier bildet man die Kombinationen der gedrückten Keys auf Richtungen ab
+	// Kombination der gedrückten Tasten auf Richtung abbilden
 	private Point2D computeMoveDirection() {
-		int numKeysPressed = pressed.cardinality();
-		if (numKeysPressed > 2) {
+		// Mehr als 2 Tasten gleichzeitig gedrückt?
+		if (pressed.cardinality() > 2) {
 			return Player.DIRECTION_NONE;
 		}
+		// 2-Tasten-Kombinationen
 		if (pressed.get(UP) && pressed.get(LEFT)) {
 			return Player.DIRECTION_NW;
-		} else if (pressed.get(UP) && pressed.get(RIGHT)) {
+		}
+		if (pressed.get(UP) && pressed.get(RIGHT)) {
 			return Player.DIRECTION_NE;
-		} else if (pressed.get(DOWN) && pressed.get(LEFT)) {
+		}
+		if (pressed.get(DOWN) && pressed.get(LEFT)) {
 			return Player.DIRECTION_SW;
-		} else if (pressed.get(DOWN) && pressed.get(RIGHT)) {
+		}
+		if (pressed.get(DOWN) && pressed.get(RIGHT)) {
 			return Player.DIRECTION_SE;
-		} else if (pressed.get(UP)) {
+		}
+		// Einzeltasten
+		if (pressed.get(UP)) {
 			return Player.DIRECTION_N;
-		} else if (pressed.get(DOWN)) {
+		}
+		if (pressed.get(DOWN)) {
 			return Player.DIRECTION_S;
-		} else if (pressed.get(LEFT)) {
+		}
+		if (pressed.get(LEFT)) {
 			return Player.DIRECTION_W;
-		} else if (pressed.get(RIGHT)) {
+		}
+		if (pressed.get(RIGHT)) {
 			return Player.DIRECTION_E;
 		}
 		return Player.DIRECTION_NONE;

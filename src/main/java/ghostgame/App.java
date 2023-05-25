@@ -23,14 +23,14 @@ public class App extends Application {
 	private Gridmap gridmap;
 	private String gridmapInUse = "Gridmap";
 	private Player player;
-
-	private AnimationTimer gameTimer;
 	private PlayerControl playerControl;
 	private Scene scene;
 	private Canvas canvas;
 	private GraphicsContext gc;
-	private Rectangle2D screenBounds;
+	private AnimationTimer gameClock;
 
+	// Noch mal überdenken:
+	private Rectangle2D screenBounds;
 	private double screenHeight, screenWidth;
 
 	@Override
@@ -46,24 +46,12 @@ public class App extends Application {
 		scene = new Scene(rootPane, 800, 600, Color.DARKGRAY);
 		player = new Player(SIZE, screenHeight, screenWidth);
 		player.setSpeed(8.0);
-		playerControl = new PlayerControl(scene, player);
+		playerControl = new PlayerControl(scene);
 		gridmap = new Gridmap(SIZE, player, screenHeight, screenWidth, gridmapInUse);
 		canvas = new Canvas(screenWidth, screenHeight);
 		gc = canvas.getGraphicsContext2D();
 
 		rootPane.setCenter(canvas);
-
-		gameTimer = new AnimationTimer() {
-			@Override
-			public void handle(long now) {
-				playerControl.steerPlayer();
-				gridmap.update();
-				gridmap.render(gc);
-				var playerScreenX = (int) (scene.getWidth() - player.getSize()) / 2;
-				var playerScreenY = (int) (scene.getHeight() - player.getSize()) / 2;
-				player.render(gc, playerScreenX, playerScreenY);
-			}
-		};
 
 		stage.setTitle("Ghost Game");
 		stage.setScene(scene);
@@ -73,10 +61,27 @@ public class App extends Application {
 				stage.setFullScreen(true);
 			}
 		});
-		stage.setOnCloseRequest(e -> System.exit(0));
 		stage.show();
 
 		player.startAnimations();
-		gameTimer.start();
+		gameClock = new AnimationTimer() {
+			@Override
+			public void handle(long now) {
+				playerControl.steerPlayer(player);
+				gridmap.update();
+				gridmap.render(gc);
+				var playerScreenX = (int) (scene.getWidth() - player.getSize()) / 2;
+				var playerScreenY = (int) (scene.getHeight() - player.getSize()) / 2;
+				player.render(gc, playerScreenX, playerScreenY);
+			}
+		};
+		gameClock.start();
+	}
+
+	@Override
+	public void stop() throws Exception {
+		player.stopAnimations();
+		gameClock.stop();
+		System.out.println("Bye.");
 	}
 }

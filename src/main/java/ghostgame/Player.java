@@ -126,6 +126,14 @@ public class Player {
 		animationStandingStill.start();
 	}
 
+	public void stopAnimations() {
+		animationMovingRight.stop();
+		animationMovingLeft.stop();
+		animationMovingUp.stop();
+		animationMovingDown.stop();
+		animationStandingStill.stop();
+	}
+
 	// TODO Sollte nicht der Player an seiner eigenen Position gezeichnet werden und die Kamera der
 	// Spielszene dafür sorgen, dass er immer in der Mitte des Fensters erscheint?
 	public void render(GraphicsContext gc, double screenX, double screenY) {
