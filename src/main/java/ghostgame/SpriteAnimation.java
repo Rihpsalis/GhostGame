@@ -24,7 +24,10 @@ SOFTWARE.
 
 package ghostgame;
 
+import javafx.animation.Animation;
+import javafx.animation.Transition;
 import javafx.scene.image.Image;
+import javafx.util.Duration;
 
 /**
  * Das ist nur eine der Möglichkeiten, eine Spriteanimation zu implementieren: für jeden "Frame" eine eigene Bilddatei.
@@ -37,19 +40,37 @@ import javafx.scene.image.Image;
  */
 public class SpriteAnimation {
 
+	private final Transition animation;
 	private final Image[] sprites;
 	private int frame;
 
-	public SpriteAnimation(Image... sprites) {
+	public SpriteAnimation(Duration duration, Image... sprites) {
 		this.sprites = sprites;
 		frame = 0;
+		animation = new Transition() {
+			{
+				setCycleCount(Animation.INDEFINITE);
+				setCycleDuration(duration);
+			}
+
+			@Override
+			protected void interpolate(double t) {
+				if (t == 1) {
+					frame += 1;
+					if (frame == sprites.length) {
+						frame = 0;
+					}
+				}
+			}
+		};
 	}
 
-	public void nextFrame() {
-		frame++;
-		if (frame == sprites.length) {
-			frame = 0;
-		}
+	public void start() {
+		animation.play();
+	}
+
+	public void stop() {
+		animation.stop();
 	}
 
 	public Image currentSprite() {

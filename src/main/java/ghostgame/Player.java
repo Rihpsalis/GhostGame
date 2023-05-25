@@ -3,6 +3,7 @@ package ghostgame;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.util.Duration;
 
 /**
  * Der Geist.
@@ -42,38 +43,34 @@ public class Player {
 	private int screenCenterX;
 	private int screenCenterY;
 
-	private Image sprite(String path) {
-		return new Image(ResourceLoader.urlFromRelPath(path).toString(), playerSize, playerSize, false, false);
-	}
-
 	public Player(double size, double screenHeight, double screenWidth) {
 		this.playerSize = size;
 
-		animationMovingRight = new SpriteAnimation(//
+		animationMovingRight = new SpriteAnimation(Duration.millis(100), //
 				sprite("player/MovingRight_0.png"), //
 				sprite("player/MovingRight_1.png"), //
 				sprite("player/MovingRight_2.png"), //
 				sprite("player/MovingRight_3.png"));
 
-		animationMovingLeft = new SpriteAnimation(//
+		animationMovingLeft = new SpriteAnimation(Duration.millis(100), //
 				sprite("player/MovingLeft_0.png"), //
 				sprite("player/MovingLeft_1.png"), //
 				sprite("player/MovingLeft_2.png"), //
 				sprite("player/MovingLeft_3.png"));
 
-		animationMovingDown = new SpriteAnimation(//
+		animationMovingDown = new SpriteAnimation(Duration.millis(100), //
 				sprite("player/MovingDown_0.png"), //
 				sprite("player/MovingDown_1.png"), //
 				sprite("player/MovingDown_2.png"), //
 				sprite("player/MovingDown_3.png"));
 
-		animationMovingUp = new SpriteAnimation(//
+		animationMovingUp = new SpriteAnimation(Duration.millis(100), //
 				sprite("player/MovingUp_0.png"), //
 				sprite("player/MovingUp_1.png"), //
 				sprite("player/MovingUp_2.png"), //
 				sprite("player/MovingUp_3.png"));
 
-		animationStandingStill = new SpriteAnimation(//
+		animationStandingStill = new SpriteAnimation(Duration.millis(500), //
 				sprite("player/StandingStill_0.png"), //
 				sprite("player/StandingStill_1.png"), //
 				sprite("player/StandingStill_2.png"), //
@@ -84,6 +81,10 @@ public class Player {
 		// Siehe Kommentar oben
 		screenCenterX = (int) (screenWidth - playerSize) / 2;
 		screenCenterY = (int) (screenHeight - playerSize) / 2;
+	}
+
+	private Image sprite(String path) {
+		return ResourceLoader.image(path, playerSize, playerSize, false, false);
 	}
 
 	public double getSpeed() {
@@ -116,22 +117,22 @@ public class Player {
 		return moveDirection;
 	}
 
-	public void animate() {
-		// Muss man alle Animationen weiterschalten oder nur die für die aktuelle Bewegungsrichtung?
-		animationMovingLeft.nextFrame();
-		animationMovingRight.nextFrame();
-		animationMovingUp.nextFrame();
-		animationMovingDown.nextFrame();
+	public void startAnimations() {
+		animationMovingRight.start();
+		animationMovingLeft.start();
+		animationMovingUp.start();
+		animationMovingDown.start();
+		animationStandingStill.start();
 	}
 
 	// TODO Sollte nicht der Player an seiner eigenen Position gezeichnet werden und die Kamera der
 	// Spielszene dafür sorgen, dass er immer in der Mitte des Fensters erscheint?
 	public void render(GraphicsContext gc) {
-		gc.drawImage(getAnimationForMoveDirection().currentSprite(), screenCenterX, screenCenterY);
+		gc.drawImage(selectAnimation().currentSprite(), screenCenterX, screenCenterY);
 	}
 
 	// Bei diagonalen Richtungen man sich halt entscheiden, welche Animation man nimmt.
-	private SpriteAnimation getAnimationForMoveDirection() {
+	private SpriteAnimation selectAnimation() {
 		if (moveDirection.equals(DIRECTION_N)) {
 			return animationMovingUp;
 		}
