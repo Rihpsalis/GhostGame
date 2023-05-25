@@ -71,18 +71,16 @@ public class App extends Application {
 				gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
 				// Simulate a camera that keeps the ghost centered on the screen
-				double sw = scene.getWidth();
-				double sh = scene.getHeight();
-				double px = player.getX() * TILESIZE;
-				double py = player.getY() * TILESIZE;
+				double centerX = 0.5 * scene.getWidth();
+				double centerY = 0.5 * scene.getHeight();
 
 				gc.save();
-				gc.translate((-px + 0.5 * sw), (-py + 0.5 * sh));
+				gc.translate(centerX - player.getX() * TILESIZE, centerY - player.getY() * TILESIZE);
 				gridmap.render(gc);
 				gc.restore();
 
 				gc.save();
-				gc.translate(0.5 * sw - player.getX(), 0.5 * sh - player.getY());
+				gc.translate(centerX - player.getX(), centerY - player.getY());
 				player.render(gc);
 				gc.restore();
 			}
