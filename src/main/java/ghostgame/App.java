@@ -7,7 +7,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class App extends Application {
@@ -23,11 +22,6 @@ public class App extends Application {
 
 	@Override
 	public void start(Stage stage) {
-		// Noch mal überdenken:
-		var screenBounds = Screen.getPrimary().getBounds();
-		var screenHeight = screenBounds.getHeight();
-		var screenWidth = screenBounds.getWidth();
-
 		var gridmap = new Gridmap(TILESIZE, MAP_CONTENT_PATH);
 		player = new Player(4 * TILESIZE);
 		player.setX(30);
@@ -37,7 +31,7 @@ public class App extends Application {
 		var rootPane = new BorderPane();
 		var scene = new Scene(rootPane, 1280, 800, Color.gray(0.2));
 
-		var canvas = new Canvas(screenWidth, screenHeight);
+		var canvas = new Canvas(scene.getWidth(), scene.getHeight());
 		var gc = canvas.getGraphicsContext2D();
 
 		// Soll der Canvas sich an die Größe der Scene anpassen?
