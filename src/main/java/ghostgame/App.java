@@ -17,21 +17,15 @@ import javafx.stage.Stage;
 
 public class App extends Application {
 
-	// ???
+	// Was genau ist das?
 	private static final int SIZE = 200;
 
-	// World/Levels
 	private Gridmap gridmap;
 	private String gridmapInUse = "Gridmap";
 	private Player player;
 
-	// Timers
 	private AnimationTimer gameTimer;
-//	private Timer animationTimer;
-
-	private InputControl inputControl;
-
-	// User interface
+	private PlayerControl playerControl;
 	private Scene scene;
 	private Canvas canvas;
 	private GraphicsContext gc;
@@ -52,7 +46,7 @@ public class App extends Application {
 		scene = new Scene(rootPane, 800, 600, Color.DARKGRAY);
 		player = new Player(SIZE, screenHeight, screenWidth);
 		player.setSpeed(8.0);
-		inputControl = new InputControl(scene, player);
+		playerControl = new PlayerControl(scene, player);
 		gridmap = new Gridmap(SIZE, player, screenHeight, screenWidth, gridmapInUse);
 		canvas = new Canvas(screenWidth, screenHeight);
 		gc = canvas.getGraphicsContext2D();
@@ -62,7 +56,7 @@ public class App extends Application {
 		gameTimer = new AnimationTimer() {
 			@Override
 			public void handle(long now) {
-				inputControl.steerPlayer();
+				playerControl.steerPlayer();
 				gridmap.update();
 				gridmap.render(gc);
 				var playerScreenX = (int) (scene.getWidth() - player.getSize()) / 2;
@@ -84,8 +78,5 @@ public class App extends Application {
 
 		player.startAnimations();
 		gameTimer.start();
-
-		System.out.println(screenWidth);
-		System.out.println(screenHeight);
 	}
 }

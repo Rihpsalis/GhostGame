@@ -5,7 +5,7 @@ import java.util.BitSet;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 
-public class InputControl {
+public class PlayerControl {
 
 	private static final int LEFT = 0;
 	private static final int RIGHT = 1;
@@ -15,7 +15,7 @@ public class InputControl {
 	private final Player player;
 	private final BitSet pressed = new BitSet(4);
 
-	public InputControl(Scene scene, Player player) {
+	public PlayerControl(Scene scene, Player player) {
 		this.player = player;
 		scene.setOnKeyPressed(e -> {
 			switch (e.getCode()) {
