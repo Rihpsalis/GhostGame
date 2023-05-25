@@ -4,7 +4,6 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
@@ -13,12 +12,10 @@ import javafx.stage.Stage;
 
 public class App extends Application {
 
-	// Was genau ist das?
-	private static final int SIZE = 200;
+	private static final int TILESIZE = 32;
 
 	// Als Programmparameter übergeben?
 	private static final String MAP_NAME = "GridMap";
-	private static final String MAP_IMAGE_PATH = "terrain/gridmap/%s.png".formatted(MAP_NAME);
 	private static final String MAP_CONTENT_PATH = "terrain/gridmap/%s_values.txt".formatted(MAP_NAME);
 
 	private Player player;
@@ -31,12 +28,14 @@ public class App extends Application {
 		var screenHeight = screenBounds.getHeight();
 		var screenWidth = screenBounds.getWidth();
 
-		var gridmap = new Gridmap(SIZE, MAP_CONTENT_PATH, MAP_IMAGE_PATH);
-		player = new Player(SIZE);
-		player.setSpeed(8.0);
+		var gridmap = new Gridmap(TILESIZE, MAP_CONTENT_PATH);
+		player = new Player(4 * TILESIZE);
+		player.setX(30);
+		player.setY(20);
+		player.setSpeed(0.2);
 
 		var rootPane = new BorderPane();
-		var scene = new Scene(rootPane, 800, 600, Color.DARKGRAY);
+		var scene = new Scene(rootPane, 1280, 800, Color.gray(0.2));
 
 		var canvas = new Canvas(screenWidth, screenHeight);
 		var gc = canvas.getGraphicsContext2D();
@@ -50,8 +49,23 @@ public class App extends Application {
 		stage.setTitle("Ghost Game");
 		stage.setScene(scene);
 		stage.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
-			if (e.getCode() == KeyCode.F11) {
-				stage.setFullScreen(true);
+			switch (e.getCode()) {
+			case F11 -> stage.setFullScreen(true);
+			case DIGIT0 -> {
+				player.setX(0);
+				player.setY(0);
+			}
+			case C -> {
+				player.setX(gridmap.getNumCols() * 0.5);
+				player.setY(gridmap.getNumRows() * 0.5);
+			}
+			case Z -> {
+				player.setX(gridmap.getNumCols());
+				player.setY(gridmap.getNumRows());
+			}
+			default -> {
+				// ignore
+			}
 			}
 		});
 		stage.show();
@@ -60,23 +74,25 @@ public class App extends Application {
 		gameClock = new AnimationTimer() {
 			@Override
 			public void handle(long now) {
-				// Update
 				playerControl.steer(player);
 				player.move();
 
-				// Canvas löschen
 				gc.setFill(scene.getFill());
 				gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-				// Das soll wohl eine Kamera simulieren, die den Player im Zentrum der Szene focussiert?
+				// Simulate a camera that keeps the ghost centered on the screen
+				double sw = scene.getWidth();
+				double sh = scene.getHeight();
+				double px = player.getX() * TILESIZE;
+				double py = player.getY() * TILESIZE;
+
 				gc.save();
-				gc.translate(-player.getX(), -player.getY());
+				gc.translate((-px + 0.5 * sw), (-py + 0.5 * sh));
 				gridmap.render(gc);
 				gc.restore();
 
 				gc.save();
-				gc.translate((int) (scene.getWidth() - player.getSize()) / 2 - player.getX(),
-						(int) (scene.getHeight() - player.getSize()) / 2 - player.getY());
+				gc.translate(0.5 * sw - player.getX(), 0.5 * sh - player.getY());
 				player.render(gc);
 				gc.restore();
 			}

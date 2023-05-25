@@ -33,15 +33,10 @@ public class Player {
 	private final SpriteAnimation animationMovingDown;
 	private final SpriteAnimation animationStandingStill;
 
-	// In welchem Koordinatensystem?
 	private double x;
 	private double y;
-
 	private Point2D moveDirection;
-
 	private double speed = 3.0;
-
-	// Was genau ist diese "Size", die Größe des Sprite?
 	private double size;
 
 	public Player(double size) {
@@ -106,8 +101,16 @@ public class Player {
 		return x;
 	}
 
+	public void setX(double x) {
+		this.x = x;
+	}
+
 	public double getY() {
 		return y;
+	}
+
+	public void setY(double y) {
+		this.y = y;
 	}
 
 	public void setMoveDirection(Point2D moveDirection) {
@@ -136,9 +139,10 @@ public class Player {
 
 	public void render(GraphicsContext gc) {
 		var animation = selectAnimation();
-		gc.drawImage(animation.currentSprite(), x, y);
+		var sprite = animation.currentSprite();
+		gc.drawImage(sprite, x - 0.5 * sprite.getWidth(), y - 0.5 * sprite.getHeight());
 		if (debug) {
-			drawPlayerInfo(gc, animation, x, y);
+			drawPlayerInfo(gc, animation);
 		}
 	}
 
@@ -159,7 +163,7 @@ public class Player {
 		return animationStandingStill;
 	}
 
-	private void drawPlayerInfo(GraphicsContext gc, SpriteAnimation animation, double screenX, double screenY) {
+	private void drawPlayerInfo(GraphicsContext gc, SpriteAnimation animation) {
 
 		String infoText = "Ghost: x=%.2f y=%.2f\nmoveDir=%s".formatted(x, y, moveDirection);
 		var animationName = "Animation: ";
@@ -180,6 +184,6 @@ public class Player {
 		infoText += animationText;
 		gc.setFill(Color.BLUE);
 		gc.setFont(Font.font("Sans", FontWeight.BLACK, 16));
-		gc.fillText(infoText, screenX - 30, screenY - 50);
+		gc.fillText(infoText, x + 40, y - 20);
 	}
 }
