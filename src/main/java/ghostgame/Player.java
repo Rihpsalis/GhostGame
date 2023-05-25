@@ -140,7 +140,7 @@ public class Player {
 		var animation = selectAnimation();
 		gc.drawImage(animation.currentSprite(), screenX, screenY);
 		if (debug) {
-			drawAnimationInfo(gc, animation, screenX, screenY);
+			drawPlayerInfo(gc, animation, screenX, screenY);
 		}
 	}
 
@@ -161,22 +161,26 @@ public class Player {
 		return animationStandingStill;
 	}
 
-	private void drawAnimationInfo(GraphicsContext gc, SpriteAnimation animation, double screenX, double screenY) {
-		var animationName = "Animation";
+	private void drawPlayerInfo(GraphicsContext gc, SpriteAnimation animation, double screenX, double screenY) {
+		String infoText = "Ghost: moveDir=" + moveDirection;
+		var animationName = "Animation: ";
 		if (animation == animationMovingDown) {
-			animationName = "Moving Down";
+			animationName += "Moving Down";
 		} else if (animation == animationMovingUp) {
-			animationName = "Moving Up";
+			animationName += "Moving Up";
 		} else if (animation == animationMovingLeft) {
-			animationName = "Moving Left";
+			animationName += "Moving Left";
 		} else if (animation == animationMovingRight) {
-			animationName = "Moving Right";
+			animationName += "Moving Right";
 		} else if (animation == animationStandingStill) {
-			animationName = "Standing Still";
+			animationName += "Standing Still";
 		}
 		var animationText = "%s (%s, frame %d)".formatted(animationName, animation.getDuration(), animation.getFrame());
+
+		infoText += "\n";
+		infoText += animationText;
 		gc.setFill(Color.BLUE);
 		gc.setFont(Font.font("Sans", FontWeight.BLACK, 16));
-		gc.fillText(animationText, screenX, screenY - 5);
+		gc.fillText(infoText, screenX - 30, screenY - 30);
 	}
 }

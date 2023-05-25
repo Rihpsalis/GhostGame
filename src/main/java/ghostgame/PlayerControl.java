@@ -39,9 +39,8 @@ public class PlayerControl {
 		});
 	}
 
-	public void steerPlayer(Player player) {
+	public void steer(Player player) {
 		player.setMoveDirection(computeMoveDirection());
-		player.move();
 	}
 
 	// Kombination der gedrückten Tasten auf Richtung abbilden

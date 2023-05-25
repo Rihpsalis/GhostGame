@@ -52,7 +52,8 @@ public class App extends Application {
 		gameClock = new AnimationTimer() {
 			@Override
 			public void handle(long now) {
-				playerControl.steerPlayer(player);
+				playerControl.steer(player);
+				player.move();
 				gridmap.update(player);
 				gridmap.render(gc);
 				var playerScreenX = (int) (scene.getWidth() - player.getSize()) / 2;
