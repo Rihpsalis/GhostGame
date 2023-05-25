@@ -25,9 +25,6 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
 	private int gridmapHeight;
 	private int gridmapWidth;
 
-	private double playerX;
-	private double playerY;
-
 	private char[][] content2D;
 
 	private double screenHeight;
@@ -101,7 +98,7 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
 		out.println("Grid rows=" + gridmapHeight + ", cols=" + gridmapWidth + ", tile size=" + terrainSize);
 	}
 
-	public void render(GraphicsContext gc) {
+	public void render(GraphicsContext gc, double dx, double dy) {
 		gc.setFill(Color.BLACK);
 		gc.fillRect(0, 0, screenWidth, screenHeight);
 
@@ -113,11 +110,11 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
 		for (int x = 0; x < gridmapWidth; x++) {
 			for (int y = 0; y < gridmapHeight; y++) {
 				if (content2D[x][y] == 'g') {
-					gc.drawImage(tileGrass, x * terrainSize + playerX, y * terrainSize + playerY);
+					gc.drawImage(tileGrass, x * terrainSize + dx, y * terrainSize + dy);
 				} else if (content2D[x][y] == 'w') {
-					gc.drawImage(tileWater, x * terrainSize + playerX, y * terrainSize + playerY);
+					gc.drawImage(tileWater, x * terrainSize + dx, y * terrainSize + dy);
 				} else if (content2D[x][y] == 'd') {
-					gc.drawImage(tileDirt, x * terrainSize + playerX, y * terrainSize + playerY);
+					gc.drawImage(tileDirt, x * terrainSize + dx, y * terrainSize + dy);
 				}
 			}
 		}
@@ -152,11 +149,5 @@ public class Gridmap { // txt einlesen und ränder hinzufügen
 		 * spriteBorder + j * terrainSize, i * terrainSize); } } } } } }
 		 */
 
-	}
-
-	// Diesen Code verstehe ich nicht.
-	public void update(Player player) {
-		playerX = player.getX();
-		playerY = -player.getY();
 	}
 }

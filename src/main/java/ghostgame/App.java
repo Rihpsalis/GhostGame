@@ -54,8 +54,8 @@ public class App extends Application {
 			public void handle(long now) {
 				playerControl.steer(player);
 				player.move();
-				gridmap.update(player);
-				gridmap.render(gc);
+				// das simuliert wohl eine Kamera, die den Player focussiert?
+				gridmap.render(gc, -player.getX(), -player.getY());
 				var playerScreenX = (int) (scene.getWidth() - player.getSize()) / 2;
 				var playerScreenY = (int) (scene.getHeight() - player.getSize()) / 2;
 				player.render(gc, playerScreenX, playerScreenY);

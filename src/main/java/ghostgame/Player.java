@@ -19,8 +19,8 @@ public class Player {
 
 	public static final Point2D DIRECTION_N = new Point2D(0, -1);
 	public static final Point2D DIRECTION_S = new Point2D(0, 1);
-	public static final Point2D DIRECTION_E = new Point2D(-1, 0);
-	public static final Point2D DIRECTION_W = new Point2D(1, 0);
+	public static final Point2D DIRECTION_E = new Point2D(1, 0);
+	public static final Point2D DIRECTION_W = new Point2D(-1, 0);
 
 	public static final Point2D DIRECTION_NW = DIRECTION_N.add(DIRECTION_W);
 	public static final Point2D DIRECTION_NE = DIRECTION_N.add(DIRECTION_E);
@@ -162,7 +162,8 @@ public class Player {
 	}
 
 	private void drawPlayerInfo(GraphicsContext gc, SpriteAnimation animation, double screenX, double screenY) {
-		String infoText = "Ghost: moveDir=" + moveDirection;
+
+		String infoText = "Ghost: x=%.2f y=%.2f\nmoveDir=%s".formatted(x, y, moveDirection);
 		var animationName = "Animation: ";
 		if (animation == animationMovingDown) {
 			animationName += "Moving Down";
@@ -181,6 +182,6 @@ public class Player {
 		infoText += animationText;
 		gc.setFill(Color.BLUE);
 		gc.setFont(Font.font("Sans", FontWeight.BLACK, 16));
-		gc.fillText(infoText, screenX - 30, screenY - 30);
+		gc.fillText(infoText, screenX - 30, screenY - 50);
 	}
 }
