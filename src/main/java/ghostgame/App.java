@@ -7,6 +7,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class App extends Application {
@@ -14,7 +15,7 @@ public class App extends Application {
 	private static final int TILESIZE = 32;
 
 	// Als Programmparameter übergeben?
-	private static final String MAP_NAME = "GridMap";
+	private static final String MAP_NAME = "Gridmap";
 
 	private Scene scene;
 	private Canvas canvas;
@@ -31,7 +32,8 @@ public class App extends Application {
 		player.setSpeed(0.2);
 
 		var rootPane = new BorderPane();
-		scene = new Scene(rootPane, 1280, 800, Color.gray(0.2));
+		var screenSize = Screen.getPrimary().getBounds();
+		scene = new Scene(rootPane, 0.8 * screenSize.getWidth(), 0.8 * screenSize.getHeight(), Color.gray(0.2));
 
 		canvas = new Canvas(scene.getWidth(), scene.getHeight());
 		canvas.widthProperty().bind(scene.widthProperty());
