@@ -2,6 +2,7 @@ package ghostgame;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyEvent;
@@ -35,8 +36,7 @@ public class App extends Application {
 		// model
 		gridmap = new Gridmap(TILESIZE, String.format("terrain/gridmap/%s_values.txt", MAP_NAME));
 		player = new Player(4 * TILESIZE);
-		player.setX(30);
-		player.setY(20);
+		player.setCenter(10, 10);
 		player.setSpeed(0.2);
 
 		// user interface
@@ -80,12 +80,12 @@ public class App extends Application {
 		double centerY = 0.5 * scene.getHeight();
 
 		g.save();
-		g.translate(centerX - player.getX() * TILESIZE, centerY - player.getY() * TILESIZE);
+		g.translate(centerX - player.center().getX() * TILESIZE, centerY - player.center().getY() * TILESIZE);
 		mapView.render(g);
 		g.restore();
 
 		g.save();
-		g.translate(centerX - player.getX(), centerY - player.getY());
+		g.translate(centerX - player.center().getX(), centerY - player.center().getY());
 		player.render(g);
 		g.restore();
 	}
@@ -103,18 +103,15 @@ public class App extends Application {
 			stage.setFullScreen(true);
 			break;
 		case DIGIT0: { // Links oben
-			player.setX(0);
-			player.setY(0);
+			player.setCenter(Point2D.ZERO);
 			break;
 		}
 		case C: { // Mitte
-			player.setX(gridmap.getNumCols() * 0.5);
-			player.setY(gridmap.getNumRows() * 0.5);
+			player.setCenter(gridmap.getNumCols() * 0.5, gridmap.getNumRows() * 0.5);
 			break;
 		}
 		case Z: { // Rechts unten
-			player.setX(gridmap.getNumCols());
-			player.setY(gridmap.getNumRows());
+			player.setCenter(gridmap.getNumCols(), gridmap.getNumRows());
 			break;
 		}
 		default:

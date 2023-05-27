@@ -1,5 +1,6 @@
 package ghostgame;
 
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -20,8 +21,7 @@ public class Player {
 	private final SpriteAnimation animationMovingDown;
 	private final SpriteAnimation animationStandingStill;
 
-	private double x;
-	private double y;
+	private Point2D center;
 	private MoveDirection moveDir;
 	private double speed = 3.0;
 	private double size;
@@ -80,24 +80,19 @@ public class Player {
 
 	public void move() {
 		var velocity = moveDir.vector.multiply(speed);
-		x += velocity.getX();
-		y += velocity.getY();
+		center = center.add(velocity);
 	}
 
-	public double getX() {
-		return x;
+	public Point2D center() {
+		return center;
 	}
 
-	public void setX(double x) {
-		this.x = x;
+	public void setCenter(Point2D p) {
+		center = p;
 	}
 
-	public double getY() {
-		return y;
-	}
-
-	public void setY(double y) {
-		this.y = y;
+	public void setCenter(double x, double y) {
+		center = new Point2D(x, y);
 	}
 
 	public void setMoveDir(MoveDirection dir) {
@@ -127,7 +122,7 @@ public class Player {
 	public void render(GraphicsContext gc) {
 		var animation = selectAnimation();
 		var sprite = animation.currentSprite();
-		gc.drawImage(sprite, x - 0.5 * sprite.getWidth(), y - 0.5 * sprite.getHeight());
+		gc.drawImage(sprite, center.getX() - 0.5 * sprite.getWidth(), center.getY() - 0.5 * sprite.getHeight());
 		if (debug) {
 			drawPlayerInfo(gc, animation);
 		}
@@ -152,7 +147,7 @@ public class Player {
 
 	private void drawPlayerInfo(GraphicsContext gc, SpriteAnimation animation) {
 
-		String infoText = String.format("Ghost: x=%.2f y=%.2f%nmoveDir=%s", x, y, moveDir);
+		String infoText = String.format("Ghost: center=(%.2f, %.2f)%nmoveDir=%s", center.getX(), center.getY(), moveDir);
 		var animationName = "Animation: ";
 		if (animation == animationMovingDown) {
 			animationName += "Moving Down";
@@ -172,6 +167,6 @@ public class Player {
 		infoText += animationText;
 		gc.setFill(Color.BLUE);
 		gc.setFont(Font.font("Sans", FontWeight.BLACK, 16));
-		gc.fillText(infoText, x + 40, y - 20);
+		gc.fillText(infoText, center.getX() + 65, center.getY() - 20);
 	}
 }
