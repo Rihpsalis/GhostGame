@@ -165,7 +165,8 @@ public class Player {
 		} else if (animation == animationStandingStill) {
 			animationName += "Standing Still";
 		}
-		var animationText = "%s (%s, frame %d)".formatted(animationName, animation.getDuration(), animation.getFrame());
+		var animationText = String.format("%s (%s, frame %d)", animationName, animation.getDuration(),
+				animation.getFrame());
 
 		infoText += "\n";
 		infoText += animationText;

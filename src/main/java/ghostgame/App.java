@@ -17,6 +17,7 @@ public class App extends Application {
 	// Als Programmparameter übergeben?
 	private static final String MAP_NAME = "Gridmap";
 
+	private Stage stage;
 	private Scene scene;
 	private Canvas canvas;
 	private Gridmap gridmap;
@@ -25,7 +26,8 @@ public class App extends Application {
 
 	@Override
 	public void start(Stage stage) {
-		gridmap = new Gridmap(TILESIZE, "terrain/gridmap/%s_values.txt".formatted(MAP_NAME));
+		this.stage = stage;
+		gridmap = new Gridmap(TILESIZE, String.format("terrain/gridmap/%s_values.txt", MAP_NAME));
 		player = new Player(4 * TILESIZE);
 		player.setX(30);
 		player.setY(20);
@@ -41,28 +43,9 @@ public class App extends Application {
 
 		rootPane.setCenter(canvas);
 
-		stage.setTitle("Ghost Game");
+		stage.setTitle("Ghost Game (Press F11 for Fullscreen)");
 		stage.setScene(scene);
-		stage.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
-			switch (e.getCode()) {
-			case F11 -> stage.setFullScreen(true);
-			case DIGIT0 -> { // Links oben
-				player.setX(0);
-				player.setY(0);
-			}
-			case C -> { // Mitte
-				player.setX(gridmap.getNumCols() * 0.5);
-				player.setY(gridmap.getNumRows() * 0.5);
-			}
-			case Z -> { // Rechts unten
-				player.setX(gridmap.getNumCols());
-				player.setY(gridmap.getNumRows());
-			}
-			default -> {
-				// ignore
-			}
-			}
-		});
+		stage.addEventHandler(KeyEvent.KEY_PRESSED, this::handleKeyPressed);
 
 		var playerControl = new PlayerControl(scene);
 		gameClock = new AnimationTimer() {
@@ -104,5 +87,30 @@ public class App extends Application {
 		player.stopAnimations();
 		gameClock.stop();
 		System.out.println("Bye.");
+	}
+
+	private void handleKeyPressed(KeyEvent e) {
+		switch (e.getCode()) {
+		case F11:
+			stage.setFullScreen(true);
+			break;
+		case DIGIT0: { // Links oben
+			player.setX(0);
+			player.setY(0);
+			break;
+		}
+		case C: { // Mitte
+			player.setX(gridmap.getNumCols() * 0.5);
+			player.setY(gridmap.getNumRows() * 0.5);
+			break;
+		}
+		case Z: { // Rechts unten
+			player.setX(gridmap.getNumCols());
+			player.setY(gridmap.getNumRows());
+			break;
+		}
+		default:
+			break;
+		}
 	}
 }

@@ -16,24 +16,46 @@ public class PlayerControl {
 	public PlayerControl(Scene scene) {
 		scene.setOnKeyPressed(e -> {
 			switch (e.getCode()) {
-			case LEFT, A -> pressed.set(LEFT);
-			case RIGHT, D -> pressed.set(RIGHT);
-			case UP, W -> pressed.set(UP);
-			case DOWN, S -> pressed.set(DOWN);
-			default -> {
-				// ignore
-			}
+			case LEFT:
+			case A:
+				pressed.set(LEFT);
+				break;
+			case RIGHT:
+			case D:
+				pressed.set(RIGHT);
+				break;
+			case UP:
+			case W:
+				pressed.set(UP);
+				break;
+			case DOWN:
+			case S:
+				pressed.set(DOWN);
+				break;
+			default:
+				break;
 			}
 		});
 		scene.setOnKeyReleased(e -> {
 			switch (e.getCode()) {
-			case LEFT, A -> pressed.clear(LEFT);
-			case RIGHT, D -> pressed.clear(RIGHT);
-			case UP, W -> pressed.clear(UP);
-			case DOWN, S -> pressed.clear(DOWN);
-			default -> {
-				// ignore
-			}
+			case LEFT:
+			case A:
+				pressed.clear(LEFT);
+				break;
+			case RIGHT:
+			case D:
+				pressed.clear(RIGHT);
+				break;
+			case UP:
+			case W:
+				pressed.clear(UP);
+				break;
+			case DOWN:
+			case S:
+				pressed.clear(DOWN);
+				break;
+			default:
+				break;
 			}
 		});
 	}

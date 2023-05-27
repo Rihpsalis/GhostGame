@@ -86,12 +86,16 @@ public class Gridmap {
 	}
 
 	private Image tileImageAt(int x, int y) {
-		return switch (content[x][y]) {
-		case 'g' -> tileGrass;
-		case 'w' -> tileWater;
-		case 'd' -> tileDirt;
-		default -> null;
-		};
+		switch (content[x][y]) {
+		case 'g':
+			return tileGrass;
+		case 'w':
+			return tileWater;
+		case 'd':
+			return tileDirt;
+		default:
+			return null;
+		}
 	}
 
 	public void render(GraphicsContext gc) {
