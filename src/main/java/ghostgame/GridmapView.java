@@ -5,11 +5,14 @@ package ghostgame;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 /**
  * World map view.
  */
 public class GridmapView {
+
+	public static boolean debug = true;
 
 	private Image tileWater;
 	private Image tileDirt;
@@ -45,6 +48,20 @@ public class GridmapView {
 					g.drawImage(image, x * App.TILESIZE, y * App.TILESIZE);
 				}
 			}
+		}
+		if (debug) {
+			drawGridLines(g);
+		}
+	}
+
+	private void drawGridLines(GraphicsContext g) {
+		var ts = App.TILESIZE;
+		g.setStroke(Color.gray(0.8));
+		for (int y = 0; y < map.getNumRows(); y++) {
+			g.strokeLine(0, y * ts, map.getNumCols() * ts, y * ts);
+		}
+		for (int x = 0; x < map.getNumCols(); x++) {
+			g.strokeLine(x * ts, 0, x * ts, map.getNumRows() * ts);
 		}
 	}
 
