@@ -1,6 +1,3 @@
-/**
- * 
- */
 package ghostgame;
 
 import javafx.beans.property.IntegerProperty;
