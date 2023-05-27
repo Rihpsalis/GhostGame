@@ -127,8 +127,8 @@ public class PlayerView {
 	private void drawPlayerInfo(GraphicsContext gc, SpriteAnimation animation) {
 		var ts = tileSizeProperty.get();
 
-		String infoText = String.format("Ghost: center=(%.2f, %.2f)%nmoveDir=%s", player.center().getX(),
-				player.center().getY(), player.getMoveDir());
+		String infoText = String.format("Ghost: center=(%.2f, %.2f)%nmoveDir=%s speed=%.2f", player.center().getX(),
+				player.center().getY(), player.getMoveDir(), player.getSpeed());
 		var animationName = "Animation: ";
 		if (animation == animationMovingDown) {
 			animationName += "Moving Down";

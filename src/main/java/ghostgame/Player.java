@@ -9,10 +9,12 @@ public class Player {
 
 	private Point2D center;
 	private MoveDirection moveDir;
-	private double speed = 3.0;
+	private double speed;
 
 	public Player() {
 		moveDir = MoveDirection.NONE;
+		center = Point2D.ZERO;
+		speed = 3.0;
 	}
 
 	public double getSpeed() {
