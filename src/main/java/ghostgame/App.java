@@ -39,6 +39,8 @@ public class App extends Application {
 
 		// model
 		map = new Gridmap(String.format("terrain/gridmap/%s_values.txt", MAP_NAME));
+		map.printContent(System.out);
+
 		player = new Player();
 		player.setCenter(map.getNumCols() * 0.5, map.getNumRows() * 0.5);
 		player.setSpeed(0.2);

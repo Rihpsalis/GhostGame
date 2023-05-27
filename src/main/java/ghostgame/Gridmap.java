@@ -10,23 +10,33 @@ import java.io.PrintStream;
  */
 public class Gridmap {
 
-	public static final char DIRT = 'd';
-	public static final char GRASS = 'g';
-	public static final char WATER = 'w';
+	public static final byte DIRT = 0;
+	public static final byte GRASS = 1;
+	public static final byte WATER = 2;
+
+	private static byte byteValue(char c) {
+		if (c == 'd')
+			return DIRT;
+		if (c == 'g')
+			return GRASS;
+		if (c == 'w')
+			return WATER;
+		throw new IllegalArgumentException("Unknown content: " + c);
+	}
 
 	private int numRows = 90;
 	private int numCols = 160;
-	private char[][] content;
+	private byte[][] content; // Note: a single *char* is stored in 2 bytes!
 
 	public Gridmap(String mapContentPath) {
-		content = new char[numCols][numRows];
+		content = new byte[numCols][numRows];
 		var url = ResourceLoader.url(mapContentPath);
 		try (var reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
 			// Hier sollte man besser über die eingelesenen Zeilen iterieren
 			for (int y = 0; y < numRows; y++) {
 				var line = reader.readLine().toCharArray();
 				for (int x = 0; x < numCols; x++) {
-					content[x][y] = line[x];
+					content[x][y] = byteValue(line[x]);
 				}
 			}
 		} catch (IOException e) {
@@ -43,7 +53,7 @@ public class Gridmap {
 		return numRows;
 	}
 
-	public char content(int x, int y) {
+	public byte content(int x, int y) {
 		return content[x][y];
 	}
 
