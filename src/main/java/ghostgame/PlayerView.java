@@ -148,6 +148,6 @@ public class PlayerView {
 		infoText += animationText;
 		gc.setFill(Color.BLUE);
 		gc.setFont(Font.font("Sans", FontWeight.BLACK, 16));
-		gc.fillText(infoText, player.center().getX() + ts, player.center().getY() - ts);
+		gc.fillText(infoText, player.center().getX() + 2 * ts, player.center().getY() - ts);
 	}
 }
