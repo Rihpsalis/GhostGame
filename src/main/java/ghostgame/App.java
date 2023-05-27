@@ -53,7 +53,7 @@ public class App extends Application {
 		canvas.heightProperty().bind(scene.heightProperty());
 		rootPane.setCenter(canvas);
 
-		stage.setTitle("Ghost Game (Press F11 for Fullscreen)");
+		stage.setTitle("Ghost Game (Press F11 for Fullscreen, +/- changes tile size)");
 		stage.setScene(scene);
 		stage.addEventHandler(KeyEvent.KEY_PRESSED, this::handleKeyPressed);
 
