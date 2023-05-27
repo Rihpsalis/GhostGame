@@ -17,22 +17,29 @@ public class App extends Application {
 	// Als Programmparameter übergeben?
 	private static final String MAP_NAME = "Gridmap";
 
+	// Model
+	private Gridmap gridmap;
+	private Player player;
+
 	private Stage stage;
 	private Scene scene;
 	private Canvas canvas;
-	private Gridmap gridmap;
-	private Player player;
+	private GridmapView mapView;
+
 	private AnimationTimer gameClock;
 
 	@Override
 	public void start(Stage stage) {
 		this.stage = stage;
+
+		// model
 		gridmap = new Gridmap(TILESIZE, String.format("terrain/gridmap/%s_values.txt", MAP_NAME));
 		player = new Player(4 * TILESIZE);
 		player.setX(30);
 		player.setY(20);
 		player.setSpeed(0.2);
 
+		// user interface
 		var rootPane = new BorderPane();
 		var screenSize = Screen.getPrimary().getBounds();
 		scene = new Scene(rootPane, 0.8 * screenSize.getWidth(), 0.8 * screenSize.getHeight(), Color.gray(0.2));
@@ -40,7 +47,6 @@ public class App extends Application {
 		canvas = new Canvas(scene.getWidth(), scene.getHeight());
 		canvas.widthProperty().bind(scene.widthProperty());
 		canvas.heightProperty().bind(scene.heightProperty());
-
 		rootPane.setCenter(canvas);
 
 		stage.setTitle("Ghost Game (Press F11 for Fullscreen)");
@@ -48,6 +54,8 @@ public class App extends Application {
 		stage.addEventHandler(KeyEvent.KEY_PRESSED, this::handleKeyPressed);
 
 		var playerControl = new PlayerControl(scene);
+		mapView = new GridmapView(gridmap);
+
 		gameClock = new AnimationTimer() {
 			@Override
 			public void handle(long now) {
@@ -73,7 +81,7 @@ public class App extends Application {
 
 		g.save();
 		g.translate(centerX - player.getX() * TILESIZE, centerY - player.getY() * TILESIZE);
-		gridmap.render(g);
+		mapView.render(g);
 		g.restore();
 
 		g.save();
