@@ -20,7 +20,9 @@ public class PlayerView {
 	public final IntegerProperty tileSizeProperty = new SimpleIntegerProperty(8) {
 		@Override
 		protected void invalidated() {
+			stopAnimations();
 			createAnimations(spriteSizeInTiles * get());
+			startAnimations();
 		}
 	};
 
