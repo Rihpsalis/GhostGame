@@ -16,11 +16,9 @@ public class Gridmap {
 
 	private int numRows = 90;
 	private int numCols = 160;
-	private int tileSize;
 	private char[][] content;
 
-	public Gridmap(int tileSize, String mapContentPath) {
-		this.tileSize = tileSize;
+	public Gridmap(String mapContentPath) {
 		content = new char[numCols][numRows];
 		var url = ResourceLoader.url(mapContentPath);
 		try (var reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
@@ -35,10 +33,6 @@ public class Gridmap {
 			// TODO log error and use specific exception
 			throw new RuntimeException(e);
 		}
-	}
-
-	public int getTileSize() {
-		return tileSize;
 	}
 
 	public int getNumCols() {
@@ -60,7 +54,7 @@ public class Gridmap {
 			}
 			out.println();
 		}
-		out.println("Grid rows=" + numRows + ", cols=" + numCols + ", tile size=" + tileSize);
+		out.println("Grid rows=" + numRows + ", cols=" + numCols);
 	}
 
 	/*

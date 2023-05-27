@@ -13,8 +13,6 @@ import javafx.stage.Stage;
 
 public class App extends Application {
 
-	private static final int TILESIZE = 32;
-
 	// Als Programmparameter übergeben?
 	private static final String MAP_NAME = "Gridmap";
 
@@ -26,16 +24,19 @@ public class App extends Application {
 	private Scene scene;
 	private Canvas canvas;
 	private GridmapView mapView;
+	private PlayerView playerView;
 
 	private AnimationTimer gameClock;
+
+	public static final int TILESIZE = 32;
 
 	@Override
 	public void start(Stage stage) {
 		this.stage = stage;
 
 		// model
-		gridmap = new Gridmap(TILESIZE, String.format("terrain/gridmap/%s_values.txt", MAP_NAME));
-		player = new Player(4 * TILESIZE);
+		gridmap = new Gridmap(String.format("terrain/gridmap/%s_values.txt", MAP_NAME));
+		player = new Player();
 		player.setCenter(10, 10);
 		player.setSpeed(0.2);
 
@@ -53,6 +54,7 @@ public class App extends Application {
 		stage.setScene(scene);
 		stage.addEventHandler(KeyEvent.KEY_PRESSED, this::handleKeyPressed);
 
+		playerView = new PlayerView(player, 4 * App.TILESIZE);
 		var playerControl = new PlayerControl(scene);
 		mapView = new GridmapView(gridmap);
 
@@ -66,7 +68,7 @@ public class App extends Application {
 		};
 
 		stage.show();
-		player.startAnimations();
+		playerView.startAnimations();
 		gameClock.start();
 	}
 
@@ -76,23 +78,26 @@ public class App extends Application {
 		g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
 		// Simulate a camera that keeps the ghost centered on the screen
-		double centerX = 0.5 * scene.getWidth();
-		double centerY = 0.5 * scene.getHeight();
+
+		Point2D sceneCenter = new Point2D(scene.getWidth(), scene.getHeight()).multiply(0.5);
+		Point2D playerViewCenter = player.center().multiply(App.TILESIZE);
 
 		g.save();
-		g.translate(centerX - player.center().getX() * TILESIZE, centerY - player.center().getY() * TILESIZE);
+		Point2D moveGridRelativeToPlayer = sceneCenter.subtract(playerViewCenter);
+		g.translate(moveGridRelativeToPlayer.getX(), moveGridRelativeToPlayer.getY());
 		mapView.render(g);
 		g.restore();
 
 		g.save();
-		g.translate(centerX - player.center().getX(), centerY - player.center().getY());
-		player.render(g);
+		Point2D makePlayerCentered = sceneCenter.subtract(player.center());
+		g.translate(makePlayerCentered.getX(), makePlayerCentered.getY());
+		playerView.render(g);
 		g.restore();
 	}
 
 	@Override
 	public void stop() throws Exception {
-		player.stopAnimations();
+		playerView.stopAnimations();
 		gameClock.stop();
 		System.out.println("Bye.");
 	}

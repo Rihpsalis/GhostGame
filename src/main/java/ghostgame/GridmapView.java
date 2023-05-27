@@ -42,14 +42,14 @@ public class GridmapView {
 			for (int y = 0; y < map.getNumRows(); y++) {
 				var image = tileImageAt(x, y);
 				if (image != null) {
-					g.drawImage(image, x * map.getTileSize(), y * map.getTileSize());
+					g.drawImage(image, x * App.TILESIZE, y * App.TILESIZE);
 				}
 			}
 		}
 	}
 
 	private Image tile(String path) {
-		return ResourceLoader.image(path, map.getTileSize(), map.getTileSize(), false, false);
+		return ResourceLoader.image(path, App.TILESIZE, App.TILESIZE, false, false);
 	}
 
 	private Image tileImageAt(int x, int y) {
