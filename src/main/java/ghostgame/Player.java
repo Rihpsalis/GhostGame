@@ -1,6 +1,5 @@
 package ghostgame;
 
-import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -15,18 +14,6 @@ public class Player {
 
 	public static boolean debug = true;
 
-	public static final Point2D DIRECTION_NONE = new Point2D(0, 0);
-
-	public static final Point2D DIRECTION_N = new Point2D(0, -1);
-	public static final Point2D DIRECTION_S = new Point2D(0, 1);
-	public static final Point2D DIRECTION_E = new Point2D(1, 0);
-	public static final Point2D DIRECTION_W = new Point2D(-1, 0);
-
-	public static final Point2D DIRECTION_NW = DIRECTION_N.add(DIRECTION_W);
-	public static final Point2D DIRECTION_NE = DIRECTION_N.add(DIRECTION_E);
-	public static final Point2D DIRECTION_SW = DIRECTION_S.add(DIRECTION_W);
-	public static final Point2D DIRECTION_SE = DIRECTION_S.add(DIRECTION_E);
-
 	private final SpriteAnimation animationMovingRight;
 	private final SpriteAnimation animationMovingLeft;
 	private final SpriteAnimation animationMovingUp;
@@ -35,7 +22,7 @@ public class Player {
 
 	private double x;
 	private double y;
-	private Point2D moveDirection;
+	private MoveDirection moveDir;
 	private double speed = 3.0;
 	private double size;
 
@@ -72,7 +59,7 @@ public class Player {
 				sprite("player/StandingStill_2.png"), //
 				sprite("player/StandingStill_3.png"));
 
-		moveDirection = DIRECTION_NONE;
+		moveDir = MoveDirection.NONE;
 	}
 
 	private Image sprite(String path) {
@@ -92,7 +79,7 @@ public class Player {
 	}
 
 	public void move() {
-		var velocity = moveDirection.multiply(speed);
+		var velocity = moveDir.vector.multiply(speed);
 		x += velocity.getX();
 		y += velocity.getY();
 	}
@@ -113,12 +100,12 @@ public class Player {
 		this.y = y;
 	}
 
-	public void setMoveDirection(Point2D moveDirection) {
-		this.moveDirection = moveDirection;
+	public void setMoveDir(MoveDirection dir) {
+		this.moveDir = dir;
 	}
 
-	public Point2D getMoveDirection() {
-		return moveDirection;
+	public MoveDirection getMoveDir() {
+		return moveDir;
 	}
 
 	public void startAnimations() {
@@ -148,16 +135,16 @@ public class Player {
 
 	// Bei diagonalen Richtungen man sich halt entscheiden, welche Animation man nimmt.
 	private SpriteAnimation selectAnimation() {
-		if (moveDirection.equals(DIRECTION_N)) {
+		if (moveDir.equals(MoveDirection.N)) {
 			return animationMovingUp;
 		}
-		if (moveDirection.equals(DIRECTION_W) || moveDirection.equals(DIRECTION_NW) || moveDirection.equals(DIRECTION_SW)) {
+		if (moveDir.equals(MoveDirection.W) || moveDir.equals(MoveDirection.NW) || moveDir.equals(MoveDirection.SW)) {
 			return animationMovingLeft;
 		}
-		if (moveDirection.equals(DIRECTION_S)) {
+		if (moveDir.equals(MoveDirection.S)) {
 			return animationMovingDown;
 		}
-		if (moveDirection.equals(DIRECTION_E) || moveDirection.equals(DIRECTION_NE) || moveDirection.equals(DIRECTION_SE)) {
+		if (moveDir.equals(MoveDirection.E) || moveDir.equals(MoveDirection.NE) || moveDir.equals(MoveDirection.SE)) {
 			return animationMovingRight;
 		}
 		return animationStandingStill;
@@ -165,7 +152,7 @@ public class Player {
 
 	private void drawPlayerInfo(GraphicsContext gc, SpriteAnimation animation) {
 
-		String infoText = "Ghost: x=%.2f y=%.2f\nmoveDir=%s".formatted(x, y, moveDirection);
+		String infoText = String.format("Ghost: x=%.2f y=%.2f%nmoveDir=%s", x, y, moveDir);
 		var animationName = "Animation: ";
 		if (animation == animationMovingDown) {
 			animationName += "Moving Down";

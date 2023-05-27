@@ -2,7 +2,6 @@ package ghostgame;
 
 import java.util.BitSet;
 
-import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 
 public class PlayerControl {
@@ -40,41 +39,41 @@ public class PlayerControl {
 	}
 
 	public void steer(Player player) {
-		player.setMoveDirection(computeMoveDirection());
+		player.setMoveDir(computeMoveDirection());
 	}
 
 	// Kombination der gedrückten Tasten auf Richtung abbilden
-	private Point2D computeMoveDirection() {
+	private MoveDirection computeMoveDirection() {
 		// Mehr als 2 Tasten gleichzeitig gedrückt?
 		if (pressed.cardinality() > 2) {
-			return Player.DIRECTION_NONE;
+			return MoveDirection.NONE;
 		}
 		// 2-Tasten-Kombinationen
 		if (pressed.get(UP) && pressed.get(LEFT)) {
-			return Player.DIRECTION_NW;
+			return MoveDirection.NW;
 		}
 		if (pressed.get(UP) && pressed.get(RIGHT)) {
-			return Player.DIRECTION_NE;
+			return MoveDirection.NE;
 		}
 		if (pressed.get(DOWN) && pressed.get(LEFT)) {
-			return Player.DIRECTION_SW;
+			return MoveDirection.SW;
 		}
 		if (pressed.get(DOWN) && pressed.get(RIGHT)) {
-			return Player.DIRECTION_SE;
+			return MoveDirection.SE;
 		}
 		// Einzeltasten
 		if (pressed.get(UP)) {
-			return Player.DIRECTION_N;
+			return MoveDirection.N;
 		}
 		if (pressed.get(DOWN)) {
-			return Player.DIRECTION_S;
+			return MoveDirection.S;
 		}
 		if (pressed.get(LEFT)) {
-			return Player.DIRECTION_W;
+			return MoveDirection.W;
 		}
 		if (pressed.get(RIGHT)) {
-			return Player.DIRECTION_E;
+			return MoveDirection.E;
 		}
-		return Player.DIRECTION_NONE;
+		return MoveDirection.NONE;
 	}
 }
