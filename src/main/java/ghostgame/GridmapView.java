@@ -3,9 +3,12 @@
  */
 package ghostgame;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 /**
  * World map view.
@@ -13,6 +16,13 @@ import javafx.scene.paint.Color;
 public class GridmapView {
 
 	public static boolean debug = true;
+
+	public final IntegerProperty tileSizeProperty = new SimpleIntegerProperty(8) {
+		@Override
+		protected void invalidated() {
+			loadTileImages();
+		}
+	};
 
 	private Image tileWater;
 	private Image tileDirt;
@@ -25,7 +35,10 @@ public class GridmapView {
 
 	public GridmapView(Gridmap map) {
 		this.map = map;
+		loadTileImages();
+	}
 
+	private void loadTileImages() {
 		tileWater = tile("terrain/floor/Water.png");
 		tileDirt = tile("terrain/floor/Dirt.png");
 		tileGrass = tile("terrain/floor/Grass.png");
@@ -41,11 +54,12 @@ public class GridmapView {
 	}
 
 	public void render(GraphicsContext g) {
+		var ts = tileSizeProperty.get();
 		for (int x = 0; x < map.getNumCols(); x++) {
 			for (int y = 0; y < map.getNumRows(); y++) {
 				var image = tileImageAt(x, y);
 				if (image != null) {
-					g.drawImage(image, x * App.TILESIZE, y * App.TILESIZE);
+					g.drawImage(image, x * ts, y * ts);
 				}
 			}
 		}
@@ -55,8 +69,9 @@ public class GridmapView {
 	}
 
 	private void drawGridLines(GraphicsContext g) {
-		var ts = App.TILESIZE;
+		var ts = tileSizeProperty.get();
 		g.setStroke(Color.gray(0.8));
+		g.setLineWidth(0.3);
 		for (int y = 0; y < map.getNumRows(); y++) {
 			g.strokeLine(0, y * ts, map.getNumCols() * ts, y * ts);
 		}
@@ -66,7 +81,8 @@ public class GridmapView {
 	}
 
 	private Image tile(String path) {
-		return ResourceLoader.image(path, App.TILESIZE, App.TILESIZE, false, false);
+		var ts = tileSizeProperty.get();
+		return ResourceLoader.image(path, ts, ts, false, false);
 	}
 
 	private Image tileImageAt(int x, int y) {

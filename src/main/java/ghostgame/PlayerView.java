@@ -3,6 +3,8 @@
  */
 package ghostgame;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -18,21 +20,29 @@ public class PlayerView {
 
 	public static boolean debug = true;
 
-	private static Image sprite(String path, double spriteSize) {
-		return ResourceLoader.image(path, spriteSize, spriteSize, false, false);
-	}
+	public final IntegerProperty tileSizeProperty = new SimpleIntegerProperty(8) {
+		@Override
+		protected void invalidated() {
+			createAnimations(spriteSizeInTiles * get());
+		}
+	};
 
 	private final Player player;
 
-	private final SpriteAnimation animationMovingRight;
-	private final SpriteAnimation animationMovingLeft;
-	private final SpriteAnimation animationMovingUp;
-	private final SpriteAnimation animationMovingDown;
-	private final SpriteAnimation animationStandingStill;
+	private final double spriteSizeInTiles;
+	private SpriteAnimation animationMovingRight;
+	private SpriteAnimation animationMovingLeft;
+	private SpriteAnimation animationMovingUp;
+	private SpriteAnimation animationMovingDown;
+	private SpriteAnimation animationStandingStill;
 
-	public PlayerView(Player player, double spriteSize) {
+	public PlayerView(Player player, double spriteSizeInTiles) {
 		this.player = player;
+		this.spriteSizeInTiles = spriteSizeInTiles;
+		createAnimations(spriteSizeInTiles * tileSizeProperty.get());
+	}
 
+	private void createAnimations(double spriteSize) {
 		animationMovingRight = new SpriteAnimation(Duration.millis(100), //
 				sprite("player/MovingRight_0.png", spriteSize), //
 				sprite("player/MovingRight_1.png", spriteSize), //
@@ -62,6 +72,10 @@ public class PlayerView {
 				sprite("player/StandingStill_1.png", spriteSize), //
 				sprite("player/StandingStill_2.png", spriteSize), //
 				sprite("player/StandingStill_3.png", spriteSize));
+	}
+
+	private static Image sprite(String path, double spriteSize) {
+		return ResourceLoader.image(path, spriteSize, spriteSize, false, false);
 	}
 
 	public void startAnimations() {
@@ -112,6 +126,8 @@ public class PlayerView {
 	}
 
 	private void drawPlayerInfo(GraphicsContext gc, SpriteAnimation animation) {
+		var ts = tileSizeProperty.get();
+
 		String infoText = String.format("Ghost: center=(%.2f, %.2f)%nmoveDir=%s", player.center().getX(),
 				player.center().getY(), player.getMoveDir());
 		var animationName = "Animation: ";
@@ -133,6 +149,6 @@ public class PlayerView {
 		infoText += animationText;
 		gc.setFill(Color.BLUE);
 		gc.setFont(Font.font("Sans", FontWeight.BLACK, 16));
-		gc.fillText(infoText, player.center().getX() + 65, player.center().getY() - 20);
+		gc.fillText(infoText, player.center().getX() + ts, player.center().getY() - ts);
 	}
 }

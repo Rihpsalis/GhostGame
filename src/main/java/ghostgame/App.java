@@ -2,12 +2,15 @@ package ghostgame;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -17,8 +20,10 @@ public class App extends Application {
 	private static final String MAP_NAME = "Gridmap";
 
 	// Model
-	private Gridmap gridmap;
+	private Gridmap map;
 	private Player player;
+
+	private final IntegerProperty tileSizeProperty = new SimpleIntegerProperty(16);
 
 	private Stage stage;
 	private Scene scene;
@@ -28,16 +33,14 @@ public class App extends Application {
 
 	private AnimationTimer gameClock;
 
-	public static final int TILESIZE = 32;
-
 	@Override
 	public void start(Stage stage) {
 		this.stage = stage;
 
 		// model
-		gridmap = new Gridmap(String.format("terrain/gridmap/%s_values.txt", MAP_NAME));
+		map = new Gridmap(String.format("terrain/gridmap/%s_values.txt", MAP_NAME));
 		player = new Player();
-		player.setCenter(10, 10);
+		player.setCenter(map.getNumCols() * 0.5, map.getNumRows() * 0.5);
 		player.setSpeed(0.2);
 
 		// user interface
@@ -54,9 +57,13 @@ public class App extends Application {
 		stage.setScene(scene);
 		stage.addEventHandler(KeyEvent.KEY_PRESSED, this::handleKeyPressed);
 
-		playerView = new PlayerView(player, 4 * App.TILESIZE);
+		playerView = new PlayerView(player, 4);
+		playerView.tileSizeProperty.bind(tileSizeProperty);
+
 		var playerControl = new PlayerControl(scene);
-		mapView = new GridmapView(gridmap);
+
+		mapView = new GridmapView(map);
+		mapView.tileSizeProperty.bind(tileSizeProperty);
 
 		gameClock = new AnimationTimer() {
 			@Override
@@ -80,7 +87,7 @@ public class App extends Application {
 		// Simulate a camera that keeps the ghost centered on the screen
 
 		Point2D sceneCenter = new Point2D(scene.getWidth(), scene.getHeight()).multiply(0.5);
-		Point2D playerViewCenter = player.center().multiply(App.TILESIZE);
+		Point2D playerViewCenter = player.center().multiply(tileSizeProperty.get());
 
 		g.save();
 		Point2D moveGridRelativeToPlayer = sceneCenter.subtract(playerViewCenter);
@@ -93,6 +100,11 @@ public class App extends Application {
 		g.translate(makePlayerCentered.getX(), makePlayerCentered.getY());
 		playerView.render(g);
 		g.restore();
+
+		g.setFill(Color.WHITE);
+		g.setFont(Font.font("Sans", 20));
+		g.fillText(String.format("Map Size: %d x %d", map.getNumCols(), map.getNumRows()), 5, 20);
+		g.fillText(String.format("Tile Size: %d", tileSizeProperty.get()), 5, 45);
 	}
 
 	@Override
@@ -112,11 +124,23 @@ public class App extends Application {
 			break;
 		}
 		case C: { // Mitte
-			player.setCenter(gridmap.getNumCols() * 0.5, gridmap.getNumRows() * 0.5);
+			player.setCenter(map.getNumCols() * 0.5, map.getNumRows() * 0.5);
 			break;
 		}
 		case Z: { // Rechts unten
-			player.setCenter(gridmap.getNumCols(), gridmap.getNumRows());
+			player.setCenter(map.getNumCols(), map.getNumRows());
+			break;
+		}
+		case PLUS: {
+			if (tileSizeProperty.get() <= 128) {
+				tileSizeProperty.set(tileSizeProperty.get() * 2);
+			}
+			break;
+		}
+		case MINUS: {
+			if (tileSizeProperty.get() >= 2) {
+				tileSizeProperty.set(tileSizeProperty.get() / 2);
+			}
 			break;
 		}
 		default:
