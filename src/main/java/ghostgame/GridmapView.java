@@ -35,15 +35,14 @@ public class GridmapView {
 		for (int i = 0; i < 4; i++) {
 			tilesDirtToWater[0] = tile("terrain/floor/Dirt_Water_" + i + ".png");
 		}
-
 	}
 
-	public void render(GraphicsContext gc) {
+	public void render(GraphicsContext g) {
 		for (int x = 0; x < map.getNumCols(); x++) {
 			for (int y = 0; y < map.getNumRows(); y++) {
 				var image = tileImageAt(x, y);
 				if (image != null) {
-					gc.drawImage(image, x * map.getTileSize(), y * map.getTileSize());
+					g.drawImage(image, x * map.getTileSize(), y * map.getTileSize());
 				}
 			}
 		}
@@ -55,15 +54,14 @@ public class GridmapView {
 
 	private Image tileImageAt(int x, int y) {
 		switch (map.content(x, y)) {
-		case 'g':
+		case Gridmap.GRASS:
 			return tileGrass;
-		case 'w':
+		case Gridmap.WATER:
 			return tileWater;
-		case 'd':
+		case Gridmap.DIRT:
 			return tileDirt;
 		default:
 			return null;
 		}
 	}
-
 }

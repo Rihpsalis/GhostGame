@@ -10,6 +10,10 @@ import java.io.PrintStream;
  */
 public class Gridmap {
 
+	public static final char DIRT = 'd';
+	public static final char GRASS = 'g';
+	public static final char WATER = 'w';
+
 	private int numRows = 90;
 	private int numCols = 160;
 	private int tileSize;
