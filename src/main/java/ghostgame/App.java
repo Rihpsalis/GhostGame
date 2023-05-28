@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 public class App extends Application {
 
 	// Als Programmparameter übergeben?
-	private static final String MAP_NAME = "Gridmap";
+	private static final String MAP_FILE = "Gridmap_values.txt";
 
 	// Model
 	private Gridmap map;
@@ -37,8 +37,10 @@ public class App extends Application {
 	public void start(Stage stage) {
 		this.stage = stage;
 
-		// model
-		map = new Gridmap(String.format("terrain/gridmap/%s_values.txt", MAP_NAME));
+		// create/load the model
+		var path = String.format("terrain/gridmap/%s", MAP_FILE);
+		var url = ResourceLoader.url(path);
+		map = new Gridmap(url);
 		map.printContent(System.out);
 
 		player = new Player();
@@ -112,7 +114,7 @@ public class App extends Application {
 		var lineHeight = 1.25 * font.getSize();
 		g.setFill(Color.WHITE);
 		g.setFont(font);
-		g.fillText(String.format("Map Size: %d x %d", map.getNumCols(), map.getNumRows()), 5, 1 * lineHeight);
+		g.fillText(String.format("Map: %d rows %d cols", map.getNumRows(), map.getNumCols()), 5, 1 * lineHeight);
 		g.fillText(String.format("Tile Size: %d", tileSizeProperty.get()), 5, 2 * lineHeight);
 		g.fillText(String.format("Scene Size: %.0f x %.0f", scene.getWidth(), scene.getHeight()), 5, 3 * lineHeight);
 		g.fillText(String.format("Canvas Size: %.0f x %.0f", canvas.getWidth(), canvas.getHeight()), 5, 4 * lineHeight);

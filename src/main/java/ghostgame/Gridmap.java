@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 
 /**
  * World map.
@@ -24,24 +27,39 @@ public class Gridmap {
 		throw new IllegalArgumentException("Unknown content: " + c);
 	}
 
-	private int numRows = 90;
-	private int numCols = 160;
+	private int numRows;
+	private int numCols;
 	private byte[][] content; // Note: a single *char* is stored in 2 bytes!
 
-	public Gridmap(String mapContentPath) {
-		content = new byte[numCols][numRows];
-		var url = ResourceLoader.url(mapContentPath);
+	public Gridmap(URL url) {
+		var lines = new ArrayList<String>();
 		try (var reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
-			// Hier sollte man besser über die eingelesenen Zeilen iterieren
-			for (int y = 0; y < numRows; y++) {
-				var line = reader.readLine().toCharArray();
-				for (int x = 0; x < numCols; x++) {
-					content[x][y] = byteValue(line[x]);
+			String line;
+			do {
+				line = reader.readLine();
+				if (line != null) {
+					lines.add(line);
 				}
+			} while (line != null);
+		} catch (IOException x) {
+			// TODO log error and use more specific exception
+			throw new RuntimeException(x);
+		}
+		if (lines.isEmpty()) {
+			throw new IllegalArgumentException("No map data, url=" + url);
+		}
+		numRows = lines.size();
+		numCols = lines.get(0).length();
+		content = new byte[numCols][numRows];
+		for (int y = 0; y < lines.size(); ++y) {
+			var line = lines.get(y);
+			if (line.length() != numCols) {
+				throw new IllegalArgumentException(
+						String.format("Line %d in map data has length %d, should be %d", y, line.length(), numCols));
 			}
-		} catch (IOException e) {
-			// TODO log error and use specific exception
-			throw new RuntimeException(e);
+			for (int x = 0; x < numCols; ++x) {
+				content[x][y] = byteValue(line.charAt(x));
+			}
 		}
 	}
 
@@ -64,7 +82,7 @@ public class Gridmap {
 			}
 			out.println();
 		}
-		out.println("Grid rows=" + numRows + ", cols=" + numCols);
+		out.println("Map rows=" + numRows + ", cols=" + numCols);
 	}
 
 	/*
