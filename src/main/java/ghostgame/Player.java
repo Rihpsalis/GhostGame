@@ -14,7 +14,7 @@ public class Player {
 	public Player() {
 		moveDir = MoveDirection.NONE;
 		center = Point2D.ZERO;
-		speed = 3.0;
+		speed = 1.0;
 	}
 
 	public double getSpeed() {

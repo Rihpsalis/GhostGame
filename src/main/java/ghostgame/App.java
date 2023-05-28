@@ -43,7 +43,7 @@ public class App extends Application {
 
 		player = new Player();
 		player.setCenter(map.getNumCols() * 0.5, map.getNumRows() * 0.5);
-		player.setSpeed(0.2);
+		player.setSpeed(0.25);
 
 		// user interface
 		var rootPane = new BorderPane();
@@ -67,6 +67,11 @@ public class App extends Application {
 		mapView = new GridmapView(map);
 		mapView.tileSizeProperty.bind(tileSizeProperty);
 
+		// Note that it is *not* guaranteed that this timer "ticks" with 60Hz!
+		// See https://edencoding.com/javafxanimation-transitions-timelines-and-animation-timers/
+		// See https://stackoverflow.com/questions/50337303/how-do-i-change-the-speed-of-an-animationtimer-in-javafx
+		// So either you have to pass the "delta time" to the update() methods of the moving entities or use
+		// a timer with guaranteed frame rate, e.g. a Timeline
 		gameClock = new AnimationTimer() {
 			@Override
 			public void handle(long now) {

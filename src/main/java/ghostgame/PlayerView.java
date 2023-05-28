@@ -126,9 +126,9 @@ public class PlayerView {
 
 	private void drawPlayerInfo(GraphicsContext gc, SpriteAnimation animation) {
 		var ts = tileSizeProperty.get();
-
-		String infoText = String.format("Ghost: center=(%.2f, %.2f)%nmoveDir=%s speed=%.2f", player.center().getX(),
-				player.center().getY(), player.getMoveDir(), player.getSpeed());
+		var tilesPerSecond = player.getSpeed() * 60; // assume 60Hz
+		String infoText = String.format("center=(%.2f, %.2f)%nmoveDir=%s%nspeed=%.2f (%.2f tiles(sec @ 60Hz)",
+				player.center().getX(), player.center().getY(), player.getMoveDir(), player.getSpeed(), tilesPerSecond);
 		var animationName = "Animation: ";
 		if (animation == animationMovingDown) {
 			animationName += "Moving Down";
@@ -144,10 +144,9 @@ public class PlayerView {
 		var animationText = String.format("%s (%s, frame %d)", animationName, animation.getDuration(),
 				animation.getFrame());
 
-		infoText += "\n";
-		infoText += animationText;
+		infoText += "\n" + animationText;
 		gc.setFill(Color.BLUE);
 		gc.setFont(Font.font("Sans", FontWeight.BLACK, 16));
-		gc.fillText(infoText, player.center().getX() + 2 * ts, player.center().getY() - ts);
+		gc.fillText(infoText, player.center().getX() + 2 * ts, player.center().getY() - 2 * ts);
 	}
 }
