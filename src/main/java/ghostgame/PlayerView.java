@@ -32,14 +32,8 @@ public class PlayerView {
 	};
 
 	private final Player player;
-
 	private final double spriteSizeInTiles;
 	private final Map<MoveDirection, SpriteAnimation> moveAnimations = new EnumMap<>(MoveDirection.class);
-//	private SpriteAnimation animationMovingRight;
-//	private SpriteAnimation animationMovingLeft;
-//	private SpriteAnimation animationMovingUp;
-//	private SpriteAnimation animationMovingDown;
-//	private SpriteAnimation animationStandingStill;
 
 	public PlayerView(Player player, double spriteSizeInTiles) {
 		this.player = player;
