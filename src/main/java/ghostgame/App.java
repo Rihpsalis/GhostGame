@@ -2,7 +2,9 @@ package ghostgame;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
@@ -15,6 +17,8 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class App extends Application {
+
+	public static final BooleanProperty DEBUG_PROPERTY = new SimpleBooleanProperty(false);
 
 	// Als Programmparameter übergeben?
 	private static final String MAP_FILE = "Gridmap_values.txt";
@@ -63,11 +67,13 @@ public class App extends Application {
 
 		playerView = new PlayerView(player, 4);
 		playerView.tileSizeProperty.bind(tileSizeProperty);
+		playerView.debugProperty.bind(DEBUG_PROPERTY);
 
 		var playerControl = new PlayerControl(scene);
 
 		mapView = new GridmapView(map);
 		mapView.tileSizeProperty.bind(tileSizeProperty);
+		mapView.debugProperty.bind(DEBUG_PROPERTY);
 
 		// Note that it is *not* guaranteed that this timer "ticks" with 60Hz!
 		// See https://edencoding.com/javafxanimation-transitions-timelines-and-animation-timers/
@@ -110,14 +116,16 @@ public class App extends Application {
 		playerView.render(g);
 		g.restore();
 
-		var font = Font.font("Sans", 20);
-		var lineHeight = 1.25 * font.getSize();
-		g.setFill(Color.WHITE);
-		g.setFont(font);
-		g.fillText(String.format("Map: %d rows %d cols", map.getNumRows(), map.getNumCols()), 5, 1 * lineHeight);
-		g.fillText(String.format("Tile Size: %d", tileSizeProperty.get()), 5, 2 * lineHeight);
-		g.fillText(String.format("Scene Size: %.0f x %.0f", scene.getWidth(), scene.getHeight()), 5, 3 * lineHeight);
-		g.fillText(String.format("Canvas Size: %.0f x %.0f", canvas.getWidth(), canvas.getHeight()), 5, 4 * lineHeight);
+		if (DEBUG_PROPERTY.get()) {
+			var font = Font.font("Sans", 20);
+			var lineHeight = 1.25 * font.getSize();
+			g.setFill(Color.WHITE);
+			g.setFont(font);
+			g.fillText(String.format("Map: %d rows %d cols", map.getNumRows(), map.getNumCols()), 5, 1 * lineHeight);
+			g.fillText(String.format("Tile Size: %d", tileSizeProperty.get()), 5, 2 * lineHeight);
+			g.fillText(String.format("Scene Size: %.0f x %.0f", scene.getWidth(), scene.getHeight()), 5, 3 * lineHeight);
+			g.fillText(String.format("Canvas Size: %.0f x %.0f", canvas.getWidth(), canvas.getHeight()), 5, 4 * lineHeight);
+		}
 	}
 
 	@Override
@@ -132,6 +140,10 @@ public class App extends Application {
 		case F11:
 			stage.setFullScreen(true);
 			break;
+		case D: {
+			DEBUG_PROPERTY.set(!DEBUG_PROPERTY.get());
+			break;
+		}
 		case DIGIT0: { // Links oben
 			player.setCenter(Point2D.ZERO);
 			break;

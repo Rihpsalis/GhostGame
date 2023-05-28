@@ -1,6 +1,8 @@
 package ghostgame;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -15,7 +17,7 @@ import javafx.util.Duration;
  */
 public class PlayerView {
 
-	public static boolean debug = true;
+	public final BooleanProperty debugProperty = new SimpleBooleanProperty(false);
 
 	public final IntegerProperty tileSizeProperty = new SimpleIntegerProperty(8) {
 		@Override
@@ -100,7 +102,7 @@ public class PlayerView {
 		var spriteSize = new Point2D(sprite.getWidth(), sprite.getHeight());
 		var spritePosition = player.center().subtract(spriteSize.multiply(0.5));
 		g.drawImage(sprite, spritePosition.getX(), spritePosition.getY());
-		if (debug) {
+		if (debugProperty.get()) {
 			drawPlayerInfo(g, animation);
 		}
 	}

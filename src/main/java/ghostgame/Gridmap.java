@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 /**
@@ -84,33 +83,4 @@ public class Gridmap {
 		}
 		out.println("Map rows=" + numRows + ", cols=" + numCols);
 	}
-
-	/*
-	 * for (int i = 0; i < gridmapHeight; i++) { for (int j = 0; j < gridmapWidth; j++) { //System.out.println("i: " + i +
-	 * " j: " + j); switch (gridmapChar2D[j][i]) { case 'g' -> { //Oben if (i != 0) { switch (gridmapChar2D[j][i - 1]) {
-	 * case 'd' -> { gc.drawImage(grassToDirt[0], j * tileSize, tileSize * i - spriteBorder); } case 'w' -> {
-	 * gc.drawImage(grassToWater[0], j * tileSize, tileSize * i - spriteBorder); } } }
-	 * 
-	 * //Links if (j != 0) { switch (gridmapChar2D[j - 1][i]) { case 'd' -> { gc.drawImage(grassToDirt[1], tileSize * j -
-	 * spriteBorder, i * tileSize); } case 'w' -> { gc.drawImage(grassToWater[1], tileSize * j - spriteBorder, i *
-	 * tileSize); } } }
-	 * 
-	 * //Unten if (i != gridmapHeight - 1) { switch (gridmapChar2D[j][i + 1]) { case 'd' -> { gc.drawImage(grassToDirt[2],
-	 * j * tileSize, spriteBorder + i * tileSize); } case 'w' -> { gc.drawImage(grassToWater[2], j * tileSize,
-	 * spriteBorder + i * tileSize); } } }
-	 * 
-	 * //Rechts if (j != gridmapWidth - 1) { switch (gridmapChar2D[j + 1][i]) { case 'd' -> { gc.drawImage(grassToDirt[3],
-	 * spriteBorder + j * tileSize, i * tileSize); } case 'w' -> { gc.drawImage(grassToWater[3], spriteBorder + j *
-	 * tileSize, i * tileSize); } } } } case 'd' -> { //Oben if (i != 0) { if (gridmapChar2D[j][i - 1] == 'w') {
-	 * gc.drawImage(dirtToWater[0], j * tileSize, tileSize * i - spriteBorder); } }
-	 * 
-	 * //Links if (j != 0) { if (gridmapChar2D[j - 1][i] == 'w') { gc.drawImage(dirtToWater[1], tileSize * j -
-	 * spriteBorder, i * tileSize); } }
-	 * 
-	 * //Unten if (i != gridmapHeight - 1) { if (gridmapChar2D[j][i + 1] == 'w') { gc.drawImage(dirtToWater[2], j *
-	 * tileSize, spriteBorder + i * tileSize); } }
-	 * 
-	 * //Rechts if (j != gridmapWidth - 1) { if (gridmapChar2D[j + 1][i] == 'w') { gc.drawImage(dirtToWater[3],
-	 * spriteBorder + j * tileSize, i * tileSize); } } } } } }
-	 */
 }
