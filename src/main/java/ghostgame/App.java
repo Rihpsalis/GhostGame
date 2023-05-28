@@ -155,7 +155,7 @@ public class App extends Application {
 		case F11:
 			stage.setFullScreen(true);
 			break;
-		case D: {
+		case I: {
 			DEBUG_PROPERTY.set(!DEBUG_PROPERTY.get());
 			break;
 		}
