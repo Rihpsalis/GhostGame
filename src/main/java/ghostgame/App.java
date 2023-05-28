@@ -1,5 +1,8 @@
 package ghostgame;
 
+import java.net.URL;
+import java.util.MissingResourceException;
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
@@ -20,8 +23,13 @@ public class App extends Application {
 
 	public static final BooleanProperty DEBUG_PROPERTY = new SimpleBooleanProperty(false);
 
+	// TODO use real logger
+	public static void log(String message, Object... args) {
+		System.out.println(String.format(message, args));
+	}
+
 	// Als Programmparameter übergeben?
-	private static final String MAP_FILE = "Gridmap_values.txt";
+	private String mapFileName = "Gridmap_values.txt";
 
 	// Model
 	private Gridmap map;
@@ -38,12 +46,26 @@ public class App extends Application {
 	private AnimationTimer gameClock;
 
 	@Override
+	public void init() throws Exception {
+		var params = getParameters().getNamed();
+		if (params.containsKey("map")) {
+			mapFileName = params.get("map");
+		}
+	}
+
+	@Override
 	public void start(Stage stage) {
 		this.stage = stage;
 
 		// create/load the model
-		var path = String.format("terrain/gridmap/%s", MAP_FILE);
-		var url = ResourceLoader.url(path);
+		var path = String.format("terrain/gridmap/%s", mapFileName);
+		URL url = null;
+		try {
+			url = ResourceLoader.url(path);
+		} catch (MissingResourceException x) {
+			log("No map found at resource path '%s'", path);
+			System.exit(1);
+		}
 		map = new Gridmap(url);
 		map.printContent(System.out);
 
