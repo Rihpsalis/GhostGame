@@ -103,10 +103,14 @@ public class App extends Application {
 		playerView.render(g);
 		g.restore();
 
+		var font = Font.font("Sans", 20);
+		var lineHeight = 1.25 * font.getSize();
 		g.setFill(Color.WHITE);
-		g.setFont(Font.font("Sans", 20));
-		g.fillText(String.format("Map Size: %d x %d", map.getNumCols(), map.getNumRows()), 5, 20);
-		g.fillText(String.format("Tile Size: %d", tileSizeProperty.get()), 5, 45);
+		g.setFont(font);
+		g.fillText(String.format("Map Size: %d x %d", map.getNumCols(), map.getNumRows()), 5, 1 * lineHeight);
+		g.fillText(String.format("Tile Size: %d", tileSizeProperty.get()), 5, 2 * lineHeight);
+		g.fillText(String.format("Scene Size: %.0f x %.0f", scene.getWidth(), scene.getHeight()), 5, 3 * lineHeight);
+		g.fillText(String.format("Canvas Size: %.0f x %.0f", canvas.getWidth(), canvas.getHeight()), 5, 4 * lineHeight);
 	}
 
 	@Override
