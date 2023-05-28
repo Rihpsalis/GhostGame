@@ -117,21 +117,35 @@ public class GridmapView {
 		if (font.getSize() > 6) {
 			g.setFill(Color.gray(0.75));
 			g.setFont(font);
-			for (int x = 0; x < map.getNumCols(); x++) {
-				for (int y = 0; y < map.getNumRows(); ++y) {
+			for (int x = 1; x < map.getNumCols() - 1; x++) {
+				for (int y = 1; y < map.getNumRows() - 1; ++y) {
 					byte c = map.content(x, y);
-					String text = "?";
-					if (c == Gridmap.DIRT) {
-						text = "d";
-					} else if (c == Gridmap.GRASS) {
-						text = "g";
-					} else if (c == Gridmap.WATER) {
-						text = "w";
+					if (hasDifferentNeighborTile(x, y)) {
+						String text = "?";
+						if (c == Gridmap.DIRT) {
+							text = "d";
+						} else if (c == Gridmap.GRASS) {
+							text = "g";
+						} else if (c == Gridmap.WATER) {
+							text = "w";
+						}
+						g.fillText(text, x * ts + 0.25 * ts, y * ts + 0.6 * ts);
 					}
-					g.fillText(text, x * ts + 0.25 * ts, y * ts + 0.6 * ts);
 				}
 			}
 		}
+	}
+
+	private boolean hasDifferentNeighborTile(int x, int y) {
+		byte c = map.content(x, y);
+		for (int dx = -1; dx <= 1; ++dx) {
+			for (int dy = -1; dy <= 1; ++dy) {
+				if (map.content(x + dx, y + dy) != c) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private Image tile(String path) {
