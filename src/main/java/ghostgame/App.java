@@ -1,6 +1,5 @@
 package ghostgame;
 
-import java.net.URL;
 import java.util.MissingResourceException;
 
 import javafx.animation.AnimationTimer;
@@ -28,15 +27,13 @@ public class App extends Application {
 		System.out.println(String.format(message, args));
 	}
 
-	// Als Programmparameter übergeben?
-	private String mapFileName = "Gridmap_values.txt";
-
 	// Model
+	private String mapFileName = "Gridmap_values.txt";
 	private Gridmap map;
 	private Player player;
 
+	// User interface
 	private final IntegerProperty tileSizeProperty = new SimpleIntegerProperty(16);
-
 	private Stage stage;
 	private Scene scene;
 	private Canvas canvas;
@@ -51,27 +48,23 @@ public class App extends Application {
 		if (params.containsKey("map")) {
 			mapFileName = params.get("map");
 		}
+		// create/load the model
+		var path = "terrain/gridmap/" + mapFileName;
+		try {
+			map = new Gridmap(ResourceLoader.url(path));
+			map.printContent(System.out); // TODO use logger
+			player = new Player();
+			player.setCenter(map.getNumCols() * 0.5, map.getNumRows() * 0.5);
+			player.setSpeed(0.4);
+		} catch (MissingResourceException x) {
+			log("No map found at resource path '%s'", path);
+			System.exit(1);
+		}
 	}
 
 	@Override
 	public void start(Stage stage) {
 		this.stage = stage;
-
-		// create/load the model
-		var path = String.format("terrain/gridmap/%s", mapFileName);
-		URL url = null;
-		try {
-			url = ResourceLoader.url(path);
-		} catch (MissingResourceException x) {
-			log("No map found at resource path '%s'", path);
-			System.exit(1);
-		}
-		map = new Gridmap(url);
-		map.printContent(System.out);
-
-		player = new Player();
-		player.setCenter(map.getNumCols() * 0.5, map.getNumRows() * 0.5);
-		player.setSpeed(0.25);
 
 		// user interface
 		var rootPane = new BorderPane();
