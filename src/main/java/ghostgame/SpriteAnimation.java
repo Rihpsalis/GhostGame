@@ -32,7 +32,7 @@ import javafx.util.Duration;
 /**
  * Das ist nur eine der Möglichkeiten, eine Spriteanimation zu implementieren: für jeden "Frame" eine eigene Bilddatei.
  * <p>
- * Effizienter wäre es wohl, ein großes Bild (Spritesheet) zu erstellen, die alle Sprites enthält, und sich in der
+ * Effizienter wäre es wohl, ein Spritesheet zu erstellen, das alle Sprites enthält, und sich in der
  * SpriteAnimation-Klasse den zum aktuellen Frame gehörenden Bildausschnitt zu merken. In JavaFX kann man (im Gegensatz
  * zu Swing) einen beliebigen Ausschnitt aus einem Bild zeichnen bzw. darauf ein ImageView positionieren.
  * 
@@ -44,6 +44,10 @@ public class SpriteAnimation {
 	private final Image[] sprites;
 	private int frame;
 
+	/**
+	 * @param duration duration of one frame
+	 * @param sprites  images of the animation
+	 */
 	public SpriteAnimation(Duration duration, Image... sprites) {
 		this.sprites = sprites;
 		frame = 0;
@@ -77,7 +81,7 @@ public class SpriteAnimation {
 		return animation.getCycleDuration();
 	}
 
-	public int getFrame() {
+	public int currentFrame() {
 		return frame;
 	}
 
