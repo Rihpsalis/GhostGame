@@ -39,4 +39,8 @@ public class ResourceLoader {
 		var url = url(path);
 		return new Image(url.toExternalForm(), width, height, preserveRatio, smooth);
 	}
+
+	public static Image sprite(String path, double spriteSize) {
+		return image(path, spriteSize, spriteSize, false, true);
+	}
 }

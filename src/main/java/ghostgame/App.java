@@ -103,9 +103,9 @@ public class App extends Application {
 			}
 		};
 
+		tileSizeProperty.set(32);
 		mapView.tileSizeProperty.bind(tileSizeProperty);
 		playerView.tileSizeProperty.bind(tileSizeProperty);
-		tileSizeProperty.set(32);
 
 		stage.show();
 		playerView.startAnimations();

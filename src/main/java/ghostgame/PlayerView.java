@@ -1,88 +1,53 @@
 package ghostgame;
 
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.Map;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.util.Duration;
 
 /**
  * Visual representation of player.
  */
 public class PlayerView {
 
-	private static Map<MoveDirection, SpriteAnimation> createAnimations(double spriteSize) {
-		if (spriteSize == 0) {
-			App.log("Creating player move animations skipped (sprite size = 0).");
-			return Collections.emptyMap();
-		}
-		App.log("Creating player move animations at sprite size %.0f", spriteSize);
-		var animations = new EnumMap<MoveDirection, SpriteAnimation>(MoveDirection.class);
-
-		animations.put(MoveDirection.E, new SpriteAnimation(Duration.millis(100), //
-				sprite("player/MovingRight_0.png", spriteSize), //
-				sprite("player/MovingRight_1.png", spriteSize), //
-				sprite("player/MovingRight_2.png", spriteSize), //
-				sprite("player/MovingRight_3.png", spriteSize)));
-
-		animations.put(MoveDirection.W, new SpriteAnimation(Duration.millis(100), //
-				sprite("player/MovingLeft_0.png", spriteSize), //
-				sprite("player/MovingLeft_1.png", spriteSize), //
-				sprite("player/MovingLeft_2.png", spriteSize), //
-				sprite("player/MovingLeft_3.png", spriteSize)));
-
-		animations.put(MoveDirection.S, new SpriteAnimation(Duration.millis(100), //
-				sprite("player/MovingDown_0.png", spriteSize), //
-				sprite("player/MovingDown_1.png", spriteSize), //
-				sprite("player/MovingDown_2.png", spriteSize), //
-				sprite("player/MovingDown_3.png", spriteSize)));
-
-		animations.put(MoveDirection.N, new SpriteAnimation(Duration.millis(100), //
-				sprite("player/MovingUp_0.png", spriteSize), //
-				sprite("player/MovingUp_1.png", spriteSize), //
-				sprite("player/MovingUp_2.png", spriteSize), //
-				sprite("player/MovingUp_3.png", spriteSize)));
-
-		animations.put(MoveDirection.NONE, new SpriteAnimation(Duration.millis(500), //
-				sprite("player/StandingStill_0.png", spriteSize), //
-				sprite("player/StandingStill_1.png", spriteSize), //
-				sprite("player/StandingStill_2.png", spriteSize), //
-				sprite("player/StandingStill_3.png", spriteSize)));
-
-		return animations;
-	}
-
-	private static Image sprite(String path, double spriteSize) {
-		return ResourceLoader.image(path, spriteSize, spriteSize, false, true);
-	}
-
 	public final BooleanProperty debugProperty = new SimpleBooleanProperty(false);
 
 	public final IntegerProperty tileSizeProperty = new SimpleIntegerProperty(8) {
 		@Override
 		protected void invalidated() {
-			stopAnimations();
-			moveAnimations = createAnimations(spriteSizeInTiles * get());
-			startAnimations();
+			moveAnimation.stop();
+			moveAnimation.setSpriteSize(spriteSizeInTiles * get());
+			moveAnimation.start();
+			standingAnimation.stop();
+			standingAnimation.setSpriteSize(spriteSizeInTiles * get());
+			standingAnimation.start();
 		}
 	};
 
 	private final Player player;
+	private final PlayerMoveAnimation moveAnimation;
+	private final PlayerStandingAnimation standingAnimation;
 	private double spriteSizeInTiles = 3.0;
-	private Map<MoveDirection, SpriteAnimation> moveAnimations = Collections.emptyMap();
 
 	public PlayerView(Player player) {
 		this.player = player;
+		moveAnimation = new PlayerMoveAnimation(player);
+		standingAnimation = new PlayerStandingAnimation();
+	}
+
+	public void startAnimations() {
+		moveAnimation.start();
+		standingAnimation.start();
+	}
+
+	public void stopAnimations() {
+		moveAnimation.stop();
+		standingAnimation.stop();
+
 	}
 
 	public int getTileSize() {
@@ -96,70 +61,30 @@ public class PlayerView {
 	public void setSpriteSizeInTiles(double numTiles) {
 		if (this.spriteSizeInTiles != numTiles) {
 			this.spriteSizeInTiles = numTiles;
-			moveAnimations = createAnimations(numTiles * tileSizeProperty.get());
+			moveAnimation.setSpriteSize(numTiles * tileSizeProperty.get());
+			standingAnimation.setSpriteSize(numTiles * tileSizeProperty.get());
 		}
-	}
-
-	public void startAnimations() {
-		moveAnimations.values().forEach(SpriteAnimation::start);
-	}
-
-	public void stopAnimations() {
-		moveAnimations.values().forEach(SpriteAnimation::stop);
 	}
 
 	public void render(GraphicsContext g) {
-		if (moveAnimations.isEmpty()) {
-			return;
-		}
-		var animation = selectAnimation();
-		var sprite = animation.currentSprite();
-		// Nur zur Verdeutlichung (ohne Point2D Instanzen zu erzeugen, wäre es natürlich effizienter).
-		var spriteSize = new Point2D(sprite.getWidth(), sprite.getHeight());
-		var spritePosition = player.center().subtract(spriteSize.multiply(0.5));
-		g.drawImage(sprite, spritePosition.getX(), spritePosition.getY());
+		var currentAnimation = player.getMoveDir() == MoveDirection.NONE ? standingAnimation : moveAnimation;
+		var sprite = currentAnimation.currentSprite();
+
+		// Draw sprite centered over player center position
+		var spritePos = player.center().subtract(sprite.getWidth() / 2, sprite.getHeight() / 2);
+		g.drawImage(sprite, spritePos.getX(), spritePos.getY());
+
 		if (debugProperty.get()) {
-			drawPlayerInfo(g, animation);
+			var ts = tileSizeProperty.get();
+			var tilesPerSecond = player.getSpeed() * 60; // assume 60Hz
+			var animationText = String.format("%s: (%.2f ms, frame %d)", currentAnimation.name(),
+					currentAnimation.frameDuration().toMillis(), currentAnimation.currentFrame());
+			var infoText = String.format("center=(%.2f, %.2f)%nmoveDir=%s%nspeed=%.2f (%.2f tiles(sec @ 60Hz)%n%s",
+					player.center().getX(), player.center().getY(), player.getMoveDir(), player.getSpeed(), tilesPerSecond,
+					animationText);
+			g.setFill(Color.ORANGE);
+			g.setFont(Font.font("Sans", FontWeight.BLACK, 16));
+			g.fillText(infoText, player.center().getX() + ts, player.center().getY() - ts);
 		}
-	}
-
-	// Bei diagonalen Richtungen man sich halt entscheiden, welche Animation man nimmt.
-	private SpriteAnimation selectAnimation() {
-		switch (player.getMoveDir()) {
-		case NW:
-		case SW:
-			return moveAnimations.get(MoveDirection.W);
-		case NE:
-		case SE:
-			return moveAnimations.get(MoveDirection.E);
-		default:
-			return moveAnimations.get(player.getMoveDir());
-		}
-	}
-
-	private void drawPlayerInfo(GraphicsContext gc, SpriteAnimation animation) {
-		var ts = tileSizeProperty.get();
-		var tilesPerSecond = player.getSpeed() * 60; // assume 60Hz
-		String infoText = String.format("center=(%.2f, %.2f)%nmoveDir=%s%nspeed=%.2f (%.2f tiles(sec @ 60Hz)",
-				player.center().getX(), player.center().getY(), player.getMoveDir(), player.getSpeed(), tilesPerSecond);
-		String animationName = "???";
-		if (animation == moveAnimations.get(MoveDirection.S)) {
-			animationName = "Moving Down";
-		} else if (animation == moveAnimations.get(MoveDirection.N)) {
-			animationName = "Moving Up";
-		} else if (animation == moveAnimations.get(MoveDirection.W)) {
-			animationName = "Moving Left";
-		} else if (animation == moveAnimations.get(MoveDirection.E)) {
-			animationName = "Moving Right";
-		} else if (animation == moveAnimations.get(MoveDirection.NONE)) {
-			animationName = "Standing Still";
-		}
-		var animationText = String.format("Animation: %s (%s, frame %d)", animationName, animation.getDuration(),
-				animation.currentFrame());
-
-		infoText += "\n" + animationText;
-		gc.setFill(Color.BLUE);
-		gc.setFont(Font.font("Sans", FontWeight.BLACK, 16));
-		gc.fillText(infoText, player.center().getX() + 2 * ts, player.center().getY() - 2 * ts);
 	}
 }
