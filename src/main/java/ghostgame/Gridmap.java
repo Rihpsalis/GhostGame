@@ -4,7 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * World map.
@@ -30,16 +31,9 @@ public class Gridmap {
 	private byte[][] content; // Note: a single *char* is stored in 2 bytes!
 
 	public void readContent(URL url) {
-		var lines = new ArrayList<String>();
-
+		List<String> lines;
 		try (var reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
-			String line;
-			do {
-				line = reader.readLine();
-				if (line != null) {
-					lines.add(line);
-				}
-			} while (line != null);
+			lines = reader.lines().collect(Collectors.toList());
 		} catch (IOException x) {
 			App.log("Error reading map from URL '%s': %s", url.toString(), x.getMessage());
 			throw new RuntimeException(x); // TODO use more specific exception
