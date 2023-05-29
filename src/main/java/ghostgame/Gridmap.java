@@ -29,8 +29,9 @@ public class Gridmap {
 	private int numCols;
 	private byte[][] content; // Note: a single *char* is stored in 2 bytes!
 
-	public Gridmap(URL url) {
+	public void readContent(URL url) {
 		var lines = new ArrayList<String>();
+
 		try (var reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
 			String line;
 			do {
@@ -40,12 +41,14 @@ public class Gridmap {
 				}
 			} while (line != null);
 		} catch (IOException x) {
-			// TODO log error and use more specific exception
-			throw new RuntimeException(x);
+			App.log("Error reading map from URL '%s': %s", url.toString(), x.getMessage());
+			throw new RuntimeException(x); // TODO use more specific exception
 		}
+
 		if (lines.isEmpty()) {
 			throw new IllegalArgumentException("No map data, url=" + url);
 		}
+
 		numRows = lines.size();
 		numCols = lines.get(0).length();
 		content = new byte[numCols][numRows];

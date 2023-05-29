@@ -37,7 +37,6 @@ public class App extends Application {
 	private Scene scene;
 	private Canvas canvas;
 	private GridmapView mapView;
-	private Player playerView;
 
 	private AnimationTimer gameClock;
 
@@ -47,10 +46,11 @@ public class App extends Application {
 		if (params.containsKey("map")) {
 			mapFileName = params.get("map");
 		}
-		// create/load the model
+		// create/load the map
+		map = new Gridmap();
 		var path = "terrain/gridmap/" + mapFileName;
 		try {
-			map = new Gridmap(ResourceLoader.url(path));
+			map.readContent(ResourceLoader.url(path));
 			log(map.content());
 		} catch (MissingResourceException x) {
 			log("No map found at resource path '%s'. Exit application.", path);
@@ -102,10 +102,10 @@ public class App extends Application {
 
 		tileSizeProperty.set(32);
 		mapView.tileSizeProperty.bind(tileSizeProperty);
-		playerView.tileSizeProperty.bind(tileSizeProperty);
+		player.tileSizeProperty.bind(tileSizeProperty);
 
 		stage.show();
-		playerView.startAnimations();
+		player.startAnimations();
 		gameClock.start();
 	}
 
@@ -128,7 +128,7 @@ public class App extends Application {
 		g.save();
 		Point2D makePlayerCentered = sceneCenter.subtract(player.center());
 		g.translate(makePlayerCentered.getX(), makePlayerCentered.getY());
-		playerView.render(g);
+		player.render(g);
 		g.restore();
 
 		if (DEBUG_PROPERTY.get()) {
@@ -145,7 +145,7 @@ public class App extends Application {
 
 	@Override
 	public void stop() throws Exception {
-		playerView.stopAnimations();
+		player.stopAnimations();
 		gameClock.stop();
 		log("Application stopped.");
 	}
