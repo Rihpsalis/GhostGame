@@ -28,18 +28,16 @@ public class App extends Application {
 		System.out.println(String.format(message, args));
 	}
 
-	// Model
+	private final IntegerProperty tileSizeProperty = new SimpleIntegerProperty();
+
 	private String mapFileName = "Gridmap_values.txt";
 	private Gridmap map;
 	private Player player;
-
-	// User interface
-	private final IntegerProperty tileSizeProperty = new SimpleIntegerProperty();
 	private Stage stage;
 	private Scene scene;
 	private Canvas canvas;
 	private GridmapView mapView;
-	private PlayerView playerView;
+	private Player playerView;
 
 	private AnimationTimer gameClock;
 
@@ -54,9 +52,6 @@ public class App extends Application {
 		try {
 			map = new Gridmap(ResourceLoader.url(path));
 			log(map.content());
-			player = new Player();
-			player.setCenter(map.getNumCols() * 0.5, map.getNumRows() * 0.5);
-			player.setSpeed(0.4);
 		} catch (MissingResourceException x) {
 			log("No map found at resource path '%s'. Exit application.", path);
 			Platform.exit();
@@ -81,8 +76,10 @@ public class App extends Application {
 		stage.setScene(scene);
 		stage.addEventHandler(KeyEvent.KEY_PRESSED, this::handleKeyPressed);
 
-		playerView = new PlayerView(player);
-		playerView.debugProperty.bind(DEBUG_PROPERTY);
+		player = new Player();
+		player.setCenter(map.getNumCols() * 0.5, map.getNumRows() * 0.5);
+		player.setSpeed(0.4);
+		player.debugProperty.bind(DEBUG_PROPERTY);
 
 		var playerControl = new PlayerControl(scene);
 
