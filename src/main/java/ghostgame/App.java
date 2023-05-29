@@ -4,6 +4,7 @@ import java.util.MissingResourceException;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -33,7 +34,7 @@ public class App extends Application {
 	private Player player;
 
 	// User interface
-	private final IntegerProperty tileSizeProperty = new SimpleIntegerProperty(16);
+	private final IntegerProperty tileSizeProperty = new SimpleIntegerProperty();
 	private Stage stage;
 	private Scene scene;
 	private Canvas canvas;
@@ -57,8 +58,8 @@ public class App extends Application {
 			player.setCenter(map.getNumCols() * 0.5, map.getNumRows() * 0.5);
 			player.setSpeed(0.4);
 		} catch (MissingResourceException x) {
-			log("No map found at resource path '%s'", path);
-			System.exit(1);
+			log("No map found at resource path '%s'. Exit application.", path);
+			Platform.exit();
 		}
 	}
 
@@ -66,28 +67,26 @@ public class App extends Application {
 	public void start(Stage stage) {
 		this.stage = stage;
 
-		// user interface
-		var rootPane = new BorderPane();
 		var screenSize = Screen.getPrimary().getBounds();
+		var rootPane = new BorderPane();
 		scene = new Scene(rootPane, 0.8 * screenSize.getWidth(), 0.8 * screenSize.getHeight(), Color.gray(0.2));
 
-		canvas = new Canvas(scene.getWidth(), scene.getHeight());
+		canvas = new Canvas(400, 300);
 		canvas.widthProperty().bind(scene.widthProperty());
 		canvas.heightProperty().bind(scene.heightProperty());
+
 		rootPane.setCenter(canvas);
 
 		stage.setTitle("Ghost Game (Press F11 for Fullscreen, +/- changes tile size)");
 		stage.setScene(scene);
 		stage.addEventHandler(KeyEvent.KEY_PRESSED, this::handleKeyPressed);
 
-		playerView = new PlayerView(player, 4);
-		playerView.tileSizeProperty.bind(tileSizeProperty);
+		playerView = new PlayerView(player);
 		playerView.debugProperty.bind(DEBUG_PROPERTY);
 
 		var playerControl = new PlayerControl(scene);
 
 		mapView = new GridmapView(map);
-		mapView.tileSizeProperty.bind(tileSizeProperty);
 		mapView.debugProperty.bind(DEBUG_PROPERTY);
 
 		// Note that it is *not* guaranteed that this timer "ticks" with 60Hz!
@@ -103,6 +102,10 @@ public class App extends Application {
 				renderScene();
 			}
 		};
+
+		mapView.tileSizeProperty.bind(tileSizeProperty);
+		playerView.tileSizeProperty.bind(tileSizeProperty);
+		tileSizeProperty.set(32);
 
 		stage.show();
 		playerView.startAnimations();
@@ -147,7 +150,7 @@ public class App extends Application {
 	public void stop() throws Exception {
 		playerView.stopAnimations();
 		gameClock.stop();
-		System.out.println("Bye.");
+		log("Application stopped.");
 	}
 
 	private void handleKeyPressed(KeyEvent e) {

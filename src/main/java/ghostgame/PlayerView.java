@@ -1,5 +1,6 @@
 package ghostgame;
 
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -20,61 +21,83 @@ import javafx.util.Duration;
  */
 public class PlayerView {
 
+	private static Map<MoveDirection, SpriteAnimation> createAnimations(double spriteSize) {
+		if (spriteSize == 0) {
+			App.log("Creating player move animations skipped (sprite size = 0).");
+			return Collections.emptyMap();
+		}
+		App.log("Creating player move animations at sprite size %.0f", spriteSize);
+		var animations = new EnumMap<MoveDirection, SpriteAnimation>(MoveDirection.class);
+
+		animations.put(MoveDirection.E, new SpriteAnimation(Duration.millis(100), //
+				sprite("player/MovingRight_0.png", spriteSize), //
+				sprite("player/MovingRight_1.png", spriteSize), //
+				sprite("player/MovingRight_2.png", spriteSize), //
+				sprite("player/MovingRight_3.png", spriteSize)));
+
+		animations.put(MoveDirection.W, new SpriteAnimation(Duration.millis(100), //
+				sprite("player/MovingLeft_0.png", spriteSize), //
+				sprite("player/MovingLeft_1.png", spriteSize), //
+				sprite("player/MovingLeft_2.png", spriteSize), //
+				sprite("player/MovingLeft_3.png", spriteSize)));
+
+		animations.put(MoveDirection.S, new SpriteAnimation(Duration.millis(100), //
+				sprite("player/MovingDown_0.png", spriteSize), //
+				sprite("player/MovingDown_1.png", spriteSize), //
+				sprite("player/MovingDown_2.png", spriteSize), //
+				sprite("player/MovingDown_3.png", spriteSize)));
+
+		animations.put(MoveDirection.N, new SpriteAnimation(Duration.millis(100), //
+				sprite("player/MovingUp_0.png", spriteSize), //
+				sprite("player/MovingUp_1.png", spriteSize), //
+				sprite("player/MovingUp_2.png", spriteSize), //
+				sprite("player/MovingUp_3.png", spriteSize)));
+
+		animations.put(MoveDirection.NONE, new SpriteAnimation(Duration.millis(500), //
+				sprite("player/StandingStill_0.png", spriteSize), //
+				sprite("player/StandingStill_1.png", spriteSize), //
+				sprite("player/StandingStill_2.png", spriteSize), //
+				sprite("player/StandingStill_3.png", spriteSize)));
+
+		return animations;
+	}
+
+	private static Image sprite(String path, double spriteSize) {
+		return ResourceLoader.image(path, spriteSize, spriteSize, false, true);
+	}
+
 	public final BooleanProperty debugProperty = new SimpleBooleanProperty(false);
 
 	public final IntegerProperty tileSizeProperty = new SimpleIntegerProperty(8) {
 		@Override
 		protected void invalidated() {
 			stopAnimations();
-			createAnimations(spriteSizeInTiles * get());
+			moveAnimations = createAnimations(spriteSizeInTiles * get());
 			startAnimations();
 		}
 	};
 
 	private final Player player;
-	private final double spriteSizeInTiles;
-	private final Map<MoveDirection, SpriteAnimation> moveAnimations = new EnumMap<>(MoveDirection.class);
+	private double spriteSizeInTiles = 3.0;
+	private Map<MoveDirection, SpriteAnimation> moveAnimations = Collections.emptyMap();
 
-	public PlayerView(Player player, double spriteSizeInTiles) {
+	public PlayerView(Player player) {
 		this.player = player;
-		this.spriteSizeInTiles = spriteSizeInTiles;
-		createAnimations(spriteSizeInTiles * tileSizeProperty.get());
 	}
 
-	private void createAnimations(double spriteSize) {
-		moveAnimations.put(MoveDirection.E, new SpriteAnimation(Duration.millis(100), //
-				sprite("player/MovingRight_0.png", spriteSize), //
-				sprite("player/MovingRight_1.png", spriteSize), //
-				sprite("player/MovingRight_2.png", spriteSize), //
-				sprite("player/MovingRight_3.png", spriteSize)));
-
-		moveAnimations.put(MoveDirection.W, new SpriteAnimation(Duration.millis(100), //
-				sprite("player/MovingLeft_0.png", spriteSize), //
-				sprite("player/MovingLeft_1.png", spriteSize), //
-				sprite("player/MovingLeft_2.png", spriteSize), //
-				sprite("player/MovingLeft_3.png", spriteSize)));
-
-		moveAnimations.put(MoveDirection.S, new SpriteAnimation(Duration.millis(100), //
-				sprite("player/MovingDown_0.png", spriteSize), //
-				sprite("player/MovingDown_1.png", spriteSize), //
-				sprite("player/MovingDown_2.png", spriteSize), //
-				sprite("player/MovingDown_3.png", spriteSize)));
-
-		moveAnimations.put(MoveDirection.N, new SpriteAnimation(Duration.millis(100), //
-				sprite("player/MovingUp_0.png", spriteSize), //
-				sprite("player/MovingUp_1.png", spriteSize), //
-				sprite("player/MovingUp_2.png", spriteSize), //
-				sprite("player/MovingUp_3.png", spriteSize)));
-
-		moveAnimations.put(MoveDirection.NONE, new SpriteAnimation(Duration.millis(500), //
-				sprite("player/StandingStill_0.png", spriteSize), //
-				sprite("player/StandingStill_1.png", spriteSize), //
-				sprite("player/StandingStill_2.png", spriteSize), //
-				sprite("player/StandingStill_3.png", spriteSize)));
+	public int getTileSize() {
+		return tileSizeProperty.get();
 	}
 
-	private static Image sprite(String path, double spriteSize) {
-		return ResourceLoader.image(path, spriteSize, spriteSize, false, false);
+	public void setTileSize(int size) {
+		tileSizeProperty.set(size);
+	}
+
+	public void setSpriteSizeInTiles(double numTiles) {
+		if (this.spriteSizeInTiles != numTiles) {
+			this.spriteSizeInTiles = numTiles;
+			moveAnimations = createAnimations(numTiles * tileSizeProperty.get());
+		}
 	}
 
 	public void startAnimations() {
@@ -86,6 +109,9 @@ public class PlayerView {
 	}
 
 	public void render(GraphicsContext g) {
+		if (moveAnimations.isEmpty()) {
+			return;
+		}
 		var animation = selectAnimation();
 		var sprite = animation.currentSprite();
 		// Nur zur Verdeutlichung (ohne Point2D Instanzen zu erzeugen, wäre es natürlich effizienter).
