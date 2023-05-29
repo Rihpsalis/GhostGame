@@ -3,7 +3,6 @@ package ghostgame;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -74,13 +73,19 @@ public class Gridmap {
 		return content[x][y];
 	}
 
-	public void printContent(PrintStream out) {
+	public String content() {
+		var sb = new StringBuilder();
+		sb.append("Map rows: ");
+		sb.append(numRows);
+		sb.append(" cols: ");
+		sb.append(numCols);
+		sb.append("\n");
 		for (int x = 0; x < numCols; x++) {
 			for (int y = 0; y < numRows; y++) {
-				out.print(content[x][y]);
+				sb.append(content[x][y]);
 			}
-			out.println();
+			sb.append("\n");
 		}
-		out.println("Map rows=" + numRows + ", cols=" + numCols);
+		return sb.toString();
 	}
 }

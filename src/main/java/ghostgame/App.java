@@ -52,7 +52,7 @@ public class App extends Application {
 		var path = "terrain/gridmap/" + mapFileName;
 		try {
 			map = new Gridmap(ResourceLoader.url(path));
-			map.printContent(System.out); // TODO use logger
+			log(map.content());
 			player = new Player();
 			player.setCenter(map.getNumCols() * 0.5, map.getNumRows() * 0.5);
 			player.setSpeed(0.4);
