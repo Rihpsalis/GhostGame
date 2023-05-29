@@ -77,7 +77,7 @@ public class App extends Application {
 
 		rootPane.setCenter(canvas);
 
-		stage.setTitle("Ghost Game (Press F11 for Fullscreen, +/- changes tile size)");
+		stage.setTitle("Ghost Game (F11=fullscreen, +/- tile size, i=info)");
 		stage.setScene(scene);
 		stage.addEventHandler(KeyEvent.KEY_PRESSED, this::handleKeyPressed);
 
