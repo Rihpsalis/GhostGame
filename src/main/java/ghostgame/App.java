@@ -9,13 +9,21 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -33,10 +41,12 @@ public class App extends Application {
 	private String mapFileName = "Gridmap_values.txt";
 	private Gridmap map;
 	private Player player;
+	private PlayerControl playerControl;
 	private Stage stage;
 	private Scene scene;
 	private Canvas canvas;
 	private GridmapView mapView;
+	private InfoPanel infoPanel;
 
 	private AnimationTimer gameClock;
 
@@ -63,14 +73,13 @@ public class App extends Application {
 		this.stage = stage;
 
 		var screenSize = Screen.getPrimary().getBounds();
-		var rootPane = new BorderPane();
+
+		var rootPane = new StackPane();
 		scene = new Scene(rootPane, 0.8 * screenSize.getWidth(), 0.8 * screenSize.getHeight(), Color.gray(0.2));
 
 		canvas = new Canvas(400, 300);
 		canvas.widthProperty().bind(scene.widthProperty());
 		canvas.heightProperty().bind(scene.heightProperty());
-
-		rootPane.setCenter(canvas);
 
 		stage.setTitle("Ghost Game (F11=fullscreen, +/- tile size, i=info)");
 		stage.setScene(scene);
@@ -81,10 +90,17 @@ public class App extends Application {
 		player.setSpeed(0.4);
 		player.debugProperty.bind(DEBUG_PROPERTY);
 
-		var playerControl = new PlayerControl(scene);
+		playerControl = new PlayerControl(scene);
 
 		mapView = new GridmapView(map);
 		mapView.debugProperty.bind(DEBUG_PROPERTY);
+
+		infoPanel = new InfoPanel();
+		StackPane.setAlignment(infoPanel, Pos.TOP_LEFT);
+		StackPane.setMargin(infoPanel, new Insets(20));
+
+		rootPane.getChildren().add(new BorderPane(canvas));
+		rootPane.getChildren().add(infoPanel);
 
 		// Note that it is *not* guaranteed that this timer "ticks" with 60Hz!
 		// See https://edencoding.com/javafxanimation-transitions-timelines-and-animation-timers/
@@ -94,8 +110,7 @@ public class App extends Application {
 		gameClock = new AnimationTimer() {
 			@Override
 			public void handle(long now) {
-				playerControl.steer(player);
-				player.move();
+				update();
 				renderScene();
 			}
 		};
@@ -107,6 +122,12 @@ public class App extends Application {
 		stage.show();
 		player.startAnimations();
 		gameClock.start();
+	}
+
+	private void update() {
+		playerControl.steer(player);
+		player.move();
+		infoPanel.update();
 	}
 
 	private void renderScene() {
@@ -130,17 +151,6 @@ public class App extends Application {
 		g.translate(makePlayerCentered.getX(), makePlayerCentered.getY());
 		player.render(g);
 		g.restore();
-
-		if (DEBUG_PROPERTY.get()) {
-			var font = Font.font("Sans", 20);
-			var lineHeight = 1.25 * font.getSize();
-			g.setFill(Color.WHITE);
-			g.setFont(font);
-			g.fillText(String.format("Map: %d rows %d cols", map.getNumRows(), map.getNumCols()), 5, 1 * lineHeight);
-			g.fillText(String.format("Tile Size: %d", tileSizeProperty.get()), 5, 2 * lineHeight);
-			g.fillText(String.format("Scene Size: %.0f x %.0f", scene.getWidth(), scene.getHeight()), 5, 3 * lineHeight);
-			g.fillText(String.format("Canvas Size: %.0f x %.0f", canvas.getWidth(), canvas.getHeight()), 5, 4 * lineHeight);
-		}
 	}
 
 	@Override
@@ -185,6 +195,36 @@ public class App extends Application {
 		}
 		default:
 			break;
+		}
+	}
+
+	// InfoPanel
+
+	private class InfoPanel extends VBox {
+
+		private Text infoText;
+
+		public InfoPanel() {
+			infoText = new Text();
+			infoText.setFont(Font.font("Sans", 20));
+			infoText.setFill(Color.WHITE);
+			getChildren().add(infoText);
+			visibleProperty().bind(DEBUG_PROPERTY);
+			setBackground(new Background(new BackgroundFill(Color.gray(0.66, 0.75), new CornerRadii(10), null)));
+			setPadding(new Insets(20));
+			setMaxSize(1, 1);
+		}
+
+		private void update() {
+			var text = new StringBuilder();
+			text.append(String.format("Map: %d rows %d cols", map.getNumRows(), map.getNumCols()));
+			text.append("\n");
+			text.append(String.format("Tile Size: %d", tileSizeProperty.get()));
+			text.append("\n");
+			text.append(String.format("Scene Size: %.0f x %.0f", scene.getWidth(), scene.getHeight()));
+			text.append("\n");
+			text.append(String.format("Canvas Size: %.0f x %.0f", canvas.getWidth(), canvas.getHeight()));
+			infoText.setText(text.toString());
 		}
 	}
 }
