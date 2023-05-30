@@ -4,6 +4,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import javafx.animation.Animation.Status;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
@@ -21,6 +22,8 @@ public class PlayerMoveAnimation extends SpriteAnimation {
 	}
 
 	public void setSpriteSize(double spriteSize) {
+		boolean restart = transition.getStatus() == Status.RUNNING;
+		transition.stop();
 		spritesByDir.clear();
 		spritesByDir.put(MoveDirection.E, spriteList("player/MovingRight_%d.png", 4, spriteSize));
 		spritesByDir.put(MoveDirection.W, spriteList("player/MovingLeft_%d.png", 4, spriteSize));
@@ -28,6 +31,9 @@ public class PlayerMoveAnimation extends SpriteAnimation {
 		spritesByDir.put(MoveDirection.N, spriteList("player/MovingUp_%d.png", 4, spriteSize));
 		spritesByDir.put(MoveDirection.NONE, spriteList("player/StandingStill_%d.png", 4, spriteSize));
 		App.log("Sprite animation '%s' created, sprite size: %.2f", name(), spriteSize);
+		if (restart) {
+			transition.playFromStart();
+		}
 	}
 
 	private List<Image> sprites() {

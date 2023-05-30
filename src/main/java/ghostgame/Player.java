@@ -11,6 +11,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 
+/**
+ * @author Armin Reichert
+ */
 public class Player {
 
 	private Point2D center;
@@ -63,17 +66,14 @@ public class Player {
 	public final IntegerProperty tileSizeProperty = new SimpleIntegerProperty(8) {
 		@Override
 		protected void invalidated() {
-			moveAnimation.stop();
 			moveAnimation.setSpriteSize(spriteSizeInTiles * get());
-			moveAnimation.start();
-			standingAnimation.stop();
 			standingAnimation.setSpriteSize(spriteSizeInTiles * get());
-			standingAnimation.start();
 		}
 	};
 
 	private final PlayerMoveAnimation moveAnimation = new PlayerMoveAnimation(this, Duration.millis(100));
 	private final PlayerStandingAnimation standingAnimation = new PlayerStandingAnimation(Duration.millis(500));
+
 	private double spriteSizeInTiles = 3.0;
 
 	public void startAnimations() {
@@ -84,7 +84,6 @@ public class Player {
 	public void stopAnimations() {
 		moveAnimation.stop();
 		standingAnimation.stop();
-
 	}
 
 	public int getTileSize() {
@@ -98,29 +97,29 @@ public class Player {
 	public void setSpriteSizeInTiles(double numTiles) {
 		if (this.spriteSizeInTiles != numTiles) {
 			this.spriteSizeInTiles = numTiles;
-			moveAnimation.setSpriteSize(numTiles * tileSizeProperty.get());
-			standingAnimation.setSpriteSize(numTiles * tileSizeProperty.get());
+			moveAnimation.setSpriteSize(numTiles * getTileSize());
+			standingAnimation.setSpriteSize(numTiles * getTileSize());
 		}
 	}
 
 	public void render(GraphicsContext g) {
-		var currentAnimation = getMoveDir() == MoveDirection.NONE ? standingAnimation : moveAnimation;
-		var sprite = currentAnimation.currentSprite();
+		var animation = getMoveDir() == MoveDirection.NONE ? standingAnimation : moveAnimation;
+		var sprite = animation.currentSprite();
 
 		// Draw sprite centered over player center position
-		var spritePos = center().subtract(sprite.getWidth() / 2, sprite.getHeight() / 2);
+		var spritePos = center.subtract(sprite.getWidth() / 2, sprite.getHeight() / 2);
 		g.drawImage(sprite, spritePos.getX(), spritePos.getY());
 
 		if (debugProperty.get()) {
-			var ts = tileSizeProperty.get();
-			var tilesPerSecond = getSpeed() * 60; // assume 60Hz
-			var animationText = String.format("%s: (%.2f ms, frame %d)", currentAnimation.name(),
-					currentAnimation.frameDuration().toMillis(), currentAnimation.currentFrame());
+			var ts = getTileSize();
+			var tilesPerSecond = speed * 60; // assume 60Hz
+			var animationText = String.format("%s: (%.2f ms/frame, frame %d|%d)", animation.name(),
+					animation.frameDuration().toMillis(), animation.currentFrame() + 1, animation.numFrames());
 			var infoText = String.format("center=(%.2f, %.2f)%nmoveDir=%s%nspeed=%.2f (%.2f tiles(sec @ 60Hz)%n%s",
-					center().getX(), center().getY(), getMoveDir(), getSpeed(), tilesPerSecond, animationText);
+					center.getX(), center.getY(), moveDir, speed, tilesPerSecond, animationText);
 			g.setFill(Color.ORANGE);
 			g.setFont(Font.font("Sans", FontWeight.BLACK, 16));
-			g.fillText(infoText, center().getX() + ts, center().getY() - ts);
+			g.fillText(infoText, center.getX() + ts, center.getY() - ts);
 		}
 	}
 }
