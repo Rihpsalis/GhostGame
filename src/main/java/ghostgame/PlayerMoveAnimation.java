@@ -1,13 +1,9 @@
 package ghostgame;
 
-import static ghostgame.ResourceLoader.sprite;
-
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import javafx.animation.Animation;
-import javafx.animation.Transition;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
@@ -16,71 +12,22 @@ import javafx.util.Duration;
  */
 public class PlayerMoveAnimation extends SpriteAnimation {
 
-	static final Duration FRAME_DURATION = Duration.millis(100);
-
 	private final Player player;
-	private double spriteSize = 8;
 	private final Map<MoveDirection, List<Image>> spritesByDir = new EnumMap<>(MoveDirection.class);
 
-	public PlayerMoveAnimation(Player player) {
+	public PlayerMoveAnimation(Player player, Duration frameDuration) {
+		super(frameDuration);
 		this.player = player;
 	}
 
 	public void setSpriteSize(double spriteSize) {
-		if (this.spriteSize == spriteSize) {
-			return;
-		}
 		spritesByDir.clear();
-		spritesByDir.put(MoveDirection.E, List.of( //
-				sprite("player/MovingRight_0.png", spriteSize), //
-				sprite("player/MovingRight_1.png", spriteSize), //
-				sprite("player/MovingRight_2.png", spriteSize), //
-				sprite("player/MovingRight_3.png", spriteSize)));
-
-		spritesByDir.put(MoveDirection.W, List.of( //
-				sprite("player/MovingLeft_0.png", spriteSize), //
-				sprite("player/MovingLeft_1.png", spriteSize), //
-				sprite("player/MovingLeft_2.png", spriteSize), //
-				sprite("player/MovingLeft_3.png", spriteSize)));
-
-		spritesByDir.put(MoveDirection.S, List.of( //
-				sprite("player/MovingDown_0.png", spriteSize), //
-				sprite("player/MovingDown_1.png", spriteSize), //
-				sprite("player/MovingDown_2.png", spriteSize), //
-				sprite("player/MovingDown_3.png", spriteSize)));
-
-		spritesByDir.put(MoveDirection.N, List.of( //
-				sprite("player/MovingUp_0.png", spriteSize), //
-				sprite("player/MovingUp_1.png", spriteSize), //
-				sprite("player/MovingUp_2.png", spriteSize), //
-				sprite("player/MovingUp_3.png", spriteSize)));
-
-		spritesByDir.put(MoveDirection.NONE, List.of( //
-				sprite("player/StandingStill_0.png", spriteSize), //
-				sprite("player/StandingStill_1.png", spriteSize), //
-				sprite("player/StandingStill_2.png", spriteSize), //
-				sprite("player/StandingStill_3.png", spriteSize)));
-
-		App.log("Player move sprites created, sprite size: %.2f", spriteSize);
-
-		transition = new Transition() {
-			{
-				setCycleCount(Animation.INDEFINITE);
-				setCycleDuration(Duration.millis(100));
-			}
-
-			@Override
-			protected void interpolate(double t) {
-				if (t == 1) {
-					frame += 1;
-					if (frame == sprites().size()) {
-						frame = 0;
-					}
-				}
-			}
-		};
-		App.log("Animation '%s' created", name());
-
+		spritesByDir.put(MoveDirection.E, spriteList("player/MovingRight_%d.png", 4, spriteSize));
+		spritesByDir.put(MoveDirection.W, spriteList("player/MovingLeft_%d.png", 4, spriteSize));
+		spritesByDir.put(MoveDirection.S, spriteList("player/MovingDown_%d.png", 4, spriteSize));
+		spritesByDir.put(MoveDirection.N, spriteList("player/MovingUp_%d.png", 4, spriteSize));
+		spritesByDir.put(MoveDirection.NONE, spriteList("player/StandingStill_%d.png", 4, spriteSize));
+		App.log("Sprite animation '%s' created, sprite size: %.2f", name(), spriteSize);
 	}
 
 	private List<Image> sprites() {
@@ -98,11 +45,6 @@ public class PlayerMoveAnimation extends SpriteAnimation {
 		default:
 			return player.getMoveDir();
 		}
-	}
-
-	@Override
-	public Duration frameDuration() {
-		return FRAME_DURATION;
 	}
 
 	@Override

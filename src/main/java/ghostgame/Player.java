@@ -9,6 +9,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.util.Duration;
 
 public class Player {
 
@@ -70,8 +71,9 @@ public class Player {
 			standingAnimation.start();
 		}
 	};
-	private final PlayerMoveAnimation moveAnimation = new PlayerMoveAnimation(this);
-	private final PlayerStandingAnimation standingAnimation = new PlayerStandingAnimation();
+
+	private final PlayerMoveAnimation moveAnimation = new PlayerMoveAnimation(this, Duration.millis(100));
+	private final PlayerStandingAnimation standingAnimation = new PlayerStandingAnimation(Duration.millis(500));
 	private double spriteSizeInTiles = 3.0;
 
 	public void startAnimations() {

@@ -1,40 +1,29 @@
 package ghostgame;
 
-import static ghostgame.ResourceLoader.sprite;
-
 import java.util.List;
 
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
+/**
+ * @author Armin Reichert
+ */
 public class PlayerStandingAnimation extends SpriteAnimation {
-
-	private static final Duration FRAME_DURATION = Duration.millis(500);
 
 	private List<Image> sprites = List.of();
 
-	public PlayerStandingAnimation() {
+	public PlayerStandingAnimation(Duration frameDuration) {
+		super(frameDuration);
 	}
 
 	public void setSpriteSize(double spriteSize) {
-		sprites = List.of( //
-				sprite("player/StandingStill_0.png", spriteSize), //
-				sprite("player/StandingStill_1.png", spriteSize), //
-				sprite("player/StandingStill_2.png", spriteSize), //
-				sprite("player/StandingStill_3.png", spriteSize));
-
-		createTransition(FRAME_DURATION);
-		App.log("Animation '%s' created", name());
+		sprites = spriteList("player/StandingStill_%d.png", 4, spriteSize);
+		App.log("Sprite animation '%s' created, sprite size: %.2f", name(), spriteSize);
 	}
 
 	@Override
 	public int numFrames() {
 		return sprites.size();
-	}
-
-	@Override
-	public Duration frameDuration() {
-		return FRAME_DURATION;
 	}
 
 	@Override

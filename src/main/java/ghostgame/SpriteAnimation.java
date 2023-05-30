@@ -1,20 +1,30 @@
 package ghostgame;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
+/**
+ * @author Armin Reichert
+ */
 public abstract class SpriteAnimation {
 
-	protected Transition transition;
-	protected int frame;
-
-	protected SpriteAnimation() {
+	protected static List<Image> spriteList(String pattern, int n, double spriteSize) {
+		var result = new ArrayList<Image>(n);
+		for (int i = 0; i < n; ++i) {
+			result.add(ResourceLoader.sprite(String.format(pattern, i), spriteSize));
+		}
+		return result;
 	}
 
-	protected void createTransition(Duration duration) {
-		frame = 0;
+	protected final Transition transition;
+	protected int frame;
+
+	protected SpriteAnimation(Duration duration) {
 		transition = new Transition() {
 			{
 				setCycleCount(Animation.INDEFINITE);
@@ -34,22 +44,20 @@ public abstract class SpriteAnimation {
 	}
 
 	public void start() {
-		if (transition != null) {
-			transition.play();
-		}
+		transition.play();
 	}
 
 	public void stop() {
-		if (transition != null) {
-			transition.stop();
-		}
+		transition.stop();
 	}
 
 	public int currentFrame() {
 		return frame;
 	}
 
-	public abstract Duration frameDuration();
+	public Duration frameDuration() {
+		return transition.getCycleDuration();
+	}
 
 	public abstract int numFrames();
 
