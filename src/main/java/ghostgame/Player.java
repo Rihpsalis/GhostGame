@@ -72,7 +72,7 @@ public class Player {
 	};
 
 	private final PlayerMoveAnimation moveAnimation = new PlayerMoveAnimation(this, Duration.millis(100));
-	private final PlayerStandingAnimation standingAnimation = new PlayerStandingAnimation(Duration.millis(500));
+	private final PlayerStandingAnimation standingAnimation = new PlayerStandingAnimation(Duration.millis(1000));
 
 	private double spriteSizeInTiles = 3.0;
 

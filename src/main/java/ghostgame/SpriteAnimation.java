@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.animation.Animation;
+import javafx.animation.Interpolator;
 import javafx.animation.Transition;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
@@ -29,6 +30,7 @@ public abstract class SpriteAnimation {
 			{
 				setCycleCount(Animation.INDEFINITE);
 				setCycleDuration(duration);
+				setInterpolator(Interpolator.LINEAR);
 			}
 
 			@Override
