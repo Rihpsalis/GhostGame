@@ -4,7 +4,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import javafx.animation.Animation.Status;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
@@ -22,7 +21,7 @@ public class PlayerMoveAnimation extends SpriteAnimation {
 	}
 
 	public void setSpriteSize(double spriteSize) {
-		boolean restart = transition.getStatus() == Status.RUNNING;
+		boolean restart = getStatus() == Status.RUNNING;
 		stop();
 		spritesByDir.clear();
 		spritesByDir.put(MoveDirection.E, spriteList("player/MovingRight_%d.png", 4, spriteSize));

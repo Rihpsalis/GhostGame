@@ -2,7 +2,6 @@ package ghostgame;
 
 import java.util.List;
 
-import javafx.animation.Animation.Status;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
@@ -18,7 +17,7 @@ public class PlayerStandingAnimation extends SpriteAnimation {
 	}
 
 	public void setSpriteSize(double spriteSize) {
-		boolean restart = transition.getStatus() == Status.RUNNING;
+		boolean restart = getStatus() == Status.RUNNING;
 		stop();
 		sprites = spriteList("player/StandingStill_%d.png", 4, spriteSize);
 		App.log("Sprites for animation '%s' created, sprite size: %.2f", name(), spriteSize);

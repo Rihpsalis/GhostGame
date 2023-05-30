@@ -12,7 +12,7 @@ import javafx.util.Duration;
 /**
  * @author Armin Reichert
  */
-public abstract class SpriteAnimation {
+public abstract class SpriteAnimation extends Transition {
 
 	protected static List<Image> spriteList(String pattern, int n, double spriteSize) {
 		var result = new ArrayList<Image>(n);
@@ -22,42 +22,51 @@ public abstract class SpriteAnimation {
 		return result;
 	}
 
-	protected final Transition transition;
 	protected int frame;
+	protected String name;
 
 	protected SpriteAnimation(Duration duration) {
-		transition = new Transition() {
-			{
-				setCycleCount(Animation.INDEFINITE);
-				setCycleDuration(duration);
-				setInterpolator(Interpolator.LINEAR);
-			}
+		name = getClass().getSimpleName();
+		setCycleCount(Animation.INDEFINITE);
+		setCycleDuration(duration);
+		setInterpolator(Interpolator.LINEAR);
+	}
 
-			@Override
-			protected void interpolate(double t) {
-				if (t == 1) {
-					frame += 1;
-					if (frame == numFrames()) {
-						frame = 0;
-					}
-				}
+	protected SpriteAnimation(String name, Duration duration) {
+		this.name = name;
+		setCycleCount(Animation.INDEFINITE);
+		setCycleDuration(duration);
+		setInterpolator(Interpolator.LINEAR);
+	}
+
+	public String name() {
+		return name;
+	}
+
+	@Override
+	protected void interpolate(double t) {
+		if (t == 1) {
+			frame += 1;
+			if (frame == numFrames()) {
+				frame = 0;
 			}
-		};
+		}
 	}
 
 	public void restart() {
 		frame = 0;
-		transition.playFromStart();
+		super.playFromStart();
 		App.log("Animation '%s' restarted", name());
 	}
 
 	public void start() {
-		transition.play();
+		super.play();
 		App.log("Animation '%s' started", name());
 	}
 
+	@Override
 	public void stop() {
-		transition.stop();
+		super.stop();
 		App.log("Animation '%s' stopped", name());
 	}
 
@@ -66,14 +75,10 @@ public abstract class SpriteAnimation {
 	}
 
 	public Duration frameDuration() {
-		return transition.getCycleDuration();
+		return super.getCycleDuration();
 	}
 
 	public abstract int numFrames();
 
 	public abstract Image currentSprite();
-
-	public String name() {
-		return getClass().getSimpleName();
-	}
 }
