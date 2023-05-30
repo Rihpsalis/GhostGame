@@ -43,12 +43,20 @@ public abstract class SpriteAnimation {
 		};
 	}
 
+	public void restart() {
+		frame = 0;
+		transition.playFromStart();
+		App.log("Animation '%s' restarted", name());
+	}
+
 	public void start() {
 		transition.play();
+		App.log("Animation '%s' started", name());
 	}
 
 	public void stop() {
 		transition.stop();
+		App.log("Animation '%s' stopped", name());
 	}
 
 	public int currentFrame() {

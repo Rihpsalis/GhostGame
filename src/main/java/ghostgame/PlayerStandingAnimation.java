@@ -21,9 +21,9 @@ public class PlayerStandingAnimation extends SpriteAnimation {
 		boolean restart = transition.getStatus() == Status.RUNNING;
 		stop();
 		sprites = spriteList("player/StandingStill_%d.png", 4, spriteSize);
-		App.log("Sprite animation '%s' created, sprite size: %.2f", name(), spriteSize);
+		App.log("Sprites for animation '%s' created, sprite size: %.2f", name(), spriteSize);
 		if (restart) {
-			transition.playFromStart();
+			restart();
 		}
 	}
 

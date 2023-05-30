@@ -77,11 +77,20 @@ public class PlayerControl {
 		if (pressed.get(UP) && pressed.get(RIGHT)) {
 			return MoveDirection.NE;
 		}
+		if (pressed.get(UP) && pressed.get(DOWN)) {
+			return MoveDirection.NONE;
+		}
 		if (pressed.get(DOWN) && pressed.get(LEFT)) {
 			return MoveDirection.SW;
 		}
 		if (pressed.get(DOWN) && pressed.get(RIGHT)) {
 			return MoveDirection.SE;
+		}
+		if (pressed.get(DOWN) && pressed.get(UP)) {
+			return MoveDirection.NONE;
+		}
+		if (pressed.get(LEFT) && pressed.get(RIGHT)) {
+			return MoveDirection.NONE;
 		}
 		// Einzeltasten
 		if (pressed.get(UP)) {

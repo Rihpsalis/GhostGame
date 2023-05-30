@@ -105,10 +105,11 @@ public class Player {
 	public void render(GraphicsContext g) {
 		var animation = getMoveDir() == MoveDirection.NONE ? standingAnimation : moveAnimation;
 		var sprite = animation.currentSprite();
-
-		// Draw sprite centered over player center position
-		var spritePos = center.subtract(sprite.getWidth() / 2, sprite.getHeight() / 2);
-		g.drawImage(sprite, spritePos.getX(), spritePos.getY());
+		if (sprite != null) {
+			// Draw sprite centered over player center position
+			var spritePos = center.subtract(sprite.getWidth() / 2, sprite.getHeight() / 2);
+			g.drawImage(sprite, spritePos.getX(), spritePos.getY());
+		}
 
 		if (debugProperty.get()) {
 			var ts = getTileSize();

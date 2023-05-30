@@ -23,20 +23,19 @@ public class PlayerMoveAnimation extends SpriteAnimation {
 
 	public void setSpriteSize(double spriteSize) {
 		boolean restart = transition.getStatus() == Status.RUNNING;
-		transition.stop();
+		stop();
 		spritesByDir.clear();
 		spritesByDir.put(MoveDirection.E, spriteList("player/MovingRight_%d.png", 4, spriteSize));
 		spritesByDir.put(MoveDirection.W, spriteList("player/MovingLeft_%d.png", 4, spriteSize));
 		spritesByDir.put(MoveDirection.S, spriteList("player/MovingDown_%d.png", 4, spriteSize));
 		spritesByDir.put(MoveDirection.N, spriteList("player/MovingUp_%d.png", 4, spriteSize));
-		spritesByDir.put(MoveDirection.NONE, spriteList("player/StandingStill_%d.png", 4, spriteSize));
-		App.log("Sprite animation '%s' created, sprite size: %.2f", name(), spriteSize);
+		App.log("Sprites for animation '%s' created, sprite size: %.2f", name(), spriteSize);
 		if (restart) {
-			transition.playFromStart();
+			restart();
 		}
 	}
 
-	private List<Image> sprites() {
+	private List<Image> currentSprites() {
 		return spritesByDir.get(currentAnimationDirection());
 	}
 
@@ -48,6 +47,8 @@ public class PlayerMoveAnimation extends SpriteAnimation {
 		case NE:
 		case SE:
 			return MoveDirection.E;
+		case NONE:
+			return MoveDirection.W;
 		default:
 			return player.getMoveDir();
 		}
@@ -55,11 +56,11 @@ public class PlayerMoveAnimation extends SpriteAnimation {
 
 	@Override
 	public int numFrames() {
-		return sprites().size();
+		return currentSprites().size();
 	}
 
 	@Override
 	public Image currentSprite() {
-		return sprites().get(frame);
+		return frame < currentSprites().size() ? currentSprites().get(frame) : null;
 	}
 }
